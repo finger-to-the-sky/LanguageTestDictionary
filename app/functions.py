@@ -1,8 +1,9 @@
-from tkinter import Button, Menu
+from tkinter import Button
 from tkinter import ttk
-from text_field_functionality import TextWorker
+from app.test_mode_functions.onehungred import one_hundred_mode
+from app.test_mode_functions import red_test, sentences_test, test_mode
+from text_field_functionality import TextWorkerTranslator
 from config import LANGUAGES_LIST
-import keyboard
 
 translate_button = None
 
@@ -16,20 +17,22 @@ def set_languages(root, button_frame, user_text, translated_text):
     :param translated_text:
     :return:
     """
+
     def on_select(event):
         global translate_button
         from_language = combo_from.get()
         to_language = combo_to.get()
 
-        text_worker = TextWorker(fl=from_language, tl=to_language)
+        text_worker = TextWorkerTranslator(fl=from_language, tl=to_language)
 
         if translate_button is not None:
             translate_button.destroy()
 
         if from_language != 'Ваш язык' and to_language != 'Язык для перевода':
             translate_button = Button(root, text='Перевести', width=20,
-                                      command=lambda: text_worker.get_text(user_textfield=user_text,
-                                                                           tr_textfield=translated_text))
+                                      command=lambda: text_worker.get_text_translator(user_textfield=user_text,
+                                                                                      tr_textfield=translated_text)
+                                      )
             translate_button.pack(pady=15)
 
     combo_from = ttk.Combobox(button_frame, values=LANGUAGES_LIST, state='readonly')
@@ -47,42 +50,21 @@ def set_languages(root, button_frame, user_text, translated_text):
 
 def other_functionality(frame):
     first_button = Button(frame, text='Перевести файл')
-    second_button = Button(frame, text='Запустить режим тестирования')
     frame.pack(pady=20)
     first_button.grid(row=0, column=1, padx=20)
-    second_button.grid(row=0, column=4, padx=20)
 
 
-def create_context_menu(root, text_widgets):
-    """
-    Create context menu for work with the text in any text field
-    :param root:
-    :param text_widgets:
-    :return:
-    """
-    def show_context_menu(event):
-        context_menu.post(event.x_root, event.y_root)
-
-    for widget in text_widgets:
-        context_menu = Menu(root, tearoff=0)
-        context_menu.add_command(label="Вырезать",
-                                 command=lambda: TextWorker.cut_text(root=root, text_widgets=text_widgets))
-        context_menu.add_command(label="Копировать",
-                                 command=lambda: TextWorker.copy_text(root=root, text_widgets=text_widgets))
-        context_menu.add_command(label="Вставить",
-                                 command=lambda: TextWorker.paste_text(root=root, text_widgets=text_widgets))
-
-        widget.bind("<Button-3>", show_context_menu)
-
-
-def russian_add_hotkeys(root, text_widgets):
-    """
-    Connect hotkeys for russian keyboard
-    :param root:
-    :param text_widgets:
-    :return:
-    """
-    keyboard.add_hotkey('ctrl+alt+c', lambda: TextWorker.copy_text(root=root, text_widgets=text_widgets))
-    keyboard.add_hotkey('ctrl+alt+v', lambda: TextWorker.paste_text(root=root, text_widgets=text_widgets))
-    keyboard.add_hotkey('ctrl+a', lambda: TextWorker.select_all(root=root, text_widgets=text_widgets))
-    keyboard.add_hotkey('ctrl+alt+x', lambda: TextWorker.cut_text(root=root, text_widgets=text_widgets))
+def test_mode_activate(root):
+    win = test_mode.TestModeClass(root=root)
+    win.create_test_mode_button(text_button='100 слов',
+                                cls_worker=one_hundred_mode.OneHundredWordsMode,
+                                side_button='left', padx=15
+                                )
+    win.create_test_mode_button(text_button='Красный Тест',
+                                cls_worker=red_test.RedTestWordsMode,
+                                side_button='left', padx=45
+                                )
+    win.create_test_mode_button(text_button='Работа с предложениями',
+                                cls_worker=sentences_test.SentencesTest,
+                                side_button='right', padx=15
+                                )

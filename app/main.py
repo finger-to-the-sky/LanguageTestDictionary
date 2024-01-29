@@ -1,6 +1,9 @@
-from tkinter import Tk, Frame, Label, Text
-from app.functions import other_functionality, set_languages, russian_add_hotkeys, create_context_menu
+from tkinter import Tk, Frame, Label, Text, Button
+from app.functions import other_functionality, set_languages, test_mode_activate
+from text_field_functionality import russian_add_hotkeys, create_context_menu
 from config import TITLE, SIZE_WINDOW
+
+
 root = Tk()
 root.title(TITLE)
 root.geometry(SIZE_WINDOW)
@@ -13,7 +16,9 @@ label = Label(root, text=f'Добро пожаловать в {TITLE}',
 label.pack()
 
 # Temporary function for buttons
+test_mode_button = Button(frame, text='Запустить режим тестирования', command=lambda: test_mode_activate(root=root))
 other_functionality(frame)
+test_mode_button.grid(row=0, column=4, padx=20)
 
 # Text Fields
 user_text_widget = Text(root, width=100, height=10)

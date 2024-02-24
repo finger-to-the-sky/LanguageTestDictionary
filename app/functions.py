@@ -1,7 +1,10 @@
 from tkinter import Button
 from tkinter import ttk
-from app.test_mode_functions.onehungred import one_hundred_mode
-from app.test_mode_functions import red_test, sentences_test, test_mode
+
+from app.test_mode_functions.onehudred_test import OneHundredMode
+from app.test_mode_functions.test_mode import test_mode_cls
+from app.test_mode_functions import red_test, sentences_test, test_mode_choose
+from app.test_mode_functions.test_mode_choose import TestModeChooseClass
 from app.text_field_functionality import TextWorkerTranslator
 from app.config import LANGUAGES_LIST
 
@@ -49,9 +52,9 @@ def set_languages(root, button_frame, user_text, translated_text):
 
 
 def test_mode_activate(root):
-    win = test_mode.TestModeClass(root=root)
+    win = TestModeChooseClass(root=root)
     win.create_test_mode_button(text_button='100 слов',
-                                cls_worker=one_hundred_mode.OneHundredWordsMode,
+                                cls_worker=OneHundredMode,
                                 side_button='left', padx=15
                                 )
     win.create_test_mode_button(text_button='Красный Тест',

@@ -3,7 +3,7 @@ from app.config import SIZE_TEST_MODE_WINDOW
 from tkinter.ttk import Style, Button
 
 
-class TestModeClass:
+class TestModeChooseClass:
     _SIZE_WINDOW = SIZE_TEST_MODE_WINDOW
     TITLE = 'Режим тестирования'
 

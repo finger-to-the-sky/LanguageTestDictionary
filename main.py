@@ -2,7 +2,7 @@ from tkinter import Tk, Frame, Label, Text, Button
 from app.functions import set_languages, test_mode_activate
 from app.text_field_functionality import russian_add_hotkeys, create_context_menu
 from app.config import TITLE, SIZE_WINDOW
-from app.other.instructions import set_instruction_field
+from app.other.instruction.instructions import set_instruction_field
 
 root = Tk()
 root.title(TITLE)

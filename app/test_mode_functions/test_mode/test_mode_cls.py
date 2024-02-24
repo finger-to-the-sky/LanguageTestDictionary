@@ -1,25 +1,26 @@
 import random
 import tkinter as tk
 from tkinter import Label, Toplevel, messagebox
-from app.config import SIZE_100_WORDS_WINDOW
 from app.text_field_functionality import russian_add_hotkeys, create_context_menu
-from app.test_mode_functions.onehungred.listbox_editor import ListBoxEditor
+from app.test_mode_functions.test_mode.listbox_editor import ListBoxEditor
+from app.other.json_functions import add_words_to_lists
 
 
-class OneHundredWordsMode:
-    _SIZE_WINDOW = SIZE_100_WORDS_WINDOW
-    TITLE = '100 слов'
+class TestModeClass:
     USER_LIST_WORDS = {'correct': [], 'incorrect': {'user_word': [], 'incorrect_word': [],
                                                     'correct_answer': []}}
 
-    def __init__(self, root):
+    def __init__(self, root, title, size_window, first_list, second_list, is_red_test=False):
         self.root = root
+        self.title = title
+        self.size_window = size_window
+        self.is_red_test = is_red_test
 
         self.window = Toplevel(self.root)
         self.frame = tk.Frame(self.window)
         self.window.focus_set()
-        self.window.title(self.TITLE)
-        self.window.geometry(self._SIZE_WINDOW)
+        self.window.title(self.title)
+        self.window.geometry(self.size_window)
 
         self.window_mode = None
         self.text_worker = None
@@ -29,12 +30,16 @@ class OneHundredWordsMode:
         self.button_clicked = tk.BooleanVar()
         self.button_clicked.set(False)
 
-        self.set_header(self.window, self.TITLE)
+        self.set_header(self.window, self.title)
         self.frame.pack(side=tk.LEFT, padx=(10, 0))
 
-        self.words_worker = ListBoxEditor(master=self.frame)
-        self.first_list = self.words_worker.FIRST_LANGUAGE_LIST
-        self.second_list = self.words_worker.SECOND_LANGUAGE_LIST
+        self.words_worker = ListBoxEditor(master=self.frame, is_red_test=self.is_red_test)
+
+        self.first_list = first_list
+        self.second_list = second_list
+        self.words_worker.FIRST_LANGUAGE_LIST = self.first_list
+        self.words_worker.SECOND_LANGUAGE_LIST = self.second_list
+
         self.words_worker.update_listbox()
 
         self.clear_btn = tk.Button(self.window, text='Очистить список',
@@ -54,6 +59,22 @@ class OneHundredWordsMode:
         self.error_text = tk.StringVar()
         self.main_win_error = tk.BooleanVar()
         self.main_win_error.set(False)
+        self.window.bind("<Button-1>", lambda event: self.on_click(event))
+        self.frame.bind("<Button-1>", lambda event: self.on_click(event))
+
+    def on_click(self, event):
+        widget = event.widget
+        if isinstance(widget, (tk.Button, tk.Listbox, tk.Entry)):
+            return
+
+        info_click = event.widget.winfo_containing(event.x_root, event.y_root)
+        if widget == info_click:
+            self.words_worker.is_visible = False
+
+            try:
+                self.words_worker.edit_field_destroy()
+            except AttributeError:
+                pass
 
     def set_error(self, text, window):
         self.error_text.set(text)
@@ -74,15 +95,16 @@ class OneHundredWordsMode:
         else:
             self.window.destroy()
             self.window_mode = Toplevel(self.root)
-            self.window_mode.title(self.TITLE)
-            self.window_mode.geometry(self._SIZE_WINDOW)
-            self.set_header(self.window_mode, self.TITLE)
+            self.window_mode.title(self.title)
+            self.window_mode.geometry(self.size_window)
+            self.set_header(self.window_mode, self.title)
             self.window_mode.lift()
             self.create_question()
 
     def finish_mode(self):
         self.window_mode.destroy()
-        self.__init__(root=self.root)
+        self.__init__(root=self.root, title=self.title, size_window=self.size_window,
+                      first_list=self.first_list, second_list=self.second_list)
 
     def create_question(self):
         # Variables for working
@@ -262,8 +284,17 @@ class OneHundredWordsMode:
             idx = self.USER_LIST_WORDS['incorrect']['incorrect_word'].index(current_word)
             user_word = self.USER_LIST_WORDS['incorrect']['user_word'][idx]
             result = self.USER_LIST_WORDS['incorrect']['correct_answer'][idx]
+            if self.is_red_test is True:
+                messagebox.showinfo(current_word, f"Вы ввели: {user_word}\nПравильный перевод: {result}")
+            else:
+                answer = messagebox.askquestion(title='Добавить слово?',
+                                                message=f"Вы ввели: {user_word}\nПравильный перевод: {result}"
+                                                        "\nДобавить слово в Красный список?")
 
-            messagebox.showinfo(current_word, f"Вы ввели: {user_word}\nПравильный перевод: {result}")
+                if answer == 'yes':
+                    add_words_to_lists(word=current_word, translate=result)
+                else:
+                    pass
 
         self.window_mode.geometry('900x500')
         self.set_header(self.window_mode,

@@ -48,12 +48,6 @@ def set_languages(root, button_frame, user_text, translated_text):
     combo_to.bind('<<ComboboxSelected>>', on_select)
 
 
-def other_functionality(frame):
-    first_button = Button(frame, text='Перевести файл')
-    frame.pack(pady=20)
-    first_button.grid(row=0, column=1, padx=20)
-
-
 def test_mode_activate(root):
     win = test_mode.TestModeClass(root=root)
     win.create_test_mode_button(text_button='100 слов',

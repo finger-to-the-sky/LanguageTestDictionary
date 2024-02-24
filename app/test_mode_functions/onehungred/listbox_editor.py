@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import Label, filedialog, messagebox
+from app.other.instructions import set_instruction_field
 from app.test_mode_functions.test_mode import TestModeClass
 from docx import Document
 from pandas import read_excel
@@ -167,6 +168,9 @@ class FileLoaderClass(ListBoxAdderClass):
     def download_words_from_file(self):
         win = TestModeClass(self.window)
         win.label.configure(text='Выберите формат файла')
+
+        set_instruction_field(window=win.window, text='Перед загрузкой ознакомьтесь с моей инструкцией по загрузке'),
+
         win.create_test_mode_button('TXT', func=(self.load_from_txt,), side_button='left', padx=15)
         win.create_test_mode_button('WORD', func=(self.load_from_word,), side_button='left', padx=45)
         win.create_test_mode_button('EXCEL', func=(self.load_from_excel,), side_button='right', padx=15)
@@ -205,7 +209,7 @@ class FileLoaderClass(ListBoxAdderClass):
                 kwargs['filepath'] = filepath
                 result = func(*args, **kwargs)
                 return result
-            except FileNotFoundError as err:
+            except FileNotFoundError:
                 error = args[0].set_error(text='Некорректно выбран файл', window=args[0].window,
                                           error_status=args[0].error_add_win)
                 error.grid(column=0, row=4)

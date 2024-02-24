@@ -2,8 +2,8 @@ from tkinter import Button
 from tkinter import ttk
 from app.test_mode_functions.onehungred import one_hundred_mode
 from app.test_mode_functions import red_test, sentences_test, test_mode
-from text_field_functionality import TextWorkerTranslator
-from config import LANGUAGES_LIST
+from app.text_field_functionality import TextWorkerTranslator
+from app.config import LANGUAGES_LIST
 
 translate_button = None
 

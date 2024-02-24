@@ -1,7 +1,7 @@
 from tkinter import Tk, Frame, Label, Text, Button
 from app.functions import other_functionality, set_languages, test_mode_activate
-from text_field_functionality import russian_add_hotkeys, create_context_menu
-from config import TITLE, SIZE_WINDOW
+from app.text_field_functionality import russian_add_hotkeys, create_context_menu
+from app.config import TITLE, SIZE_WINDOW
 
 
 root = Tk()

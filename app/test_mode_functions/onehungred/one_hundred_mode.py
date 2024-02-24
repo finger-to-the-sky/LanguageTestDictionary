@@ -1,23 +1,26 @@
 import random
 import tkinter as tk
-from tkinter import Label, Toplevel, ttk, messagebox
-from config import SIZE_100_WORDS_WINDOW, LANGUAGES_LIST
-from app.text_field_functionality import TextWorker, russian_add_hotkeys, create_context_menu
-from .listbox_editor import ListboxWordRedactor
+from tkinter import Label, Toplevel, messagebox
+from app.config import SIZE_100_WORDS_WINDOW
+from app.text_field_functionality import russian_add_hotkeys, create_context_menu
+from app.test_mode_functions.onehungred.listbox_editor import ListBoxEditor
 
 
 class OneHundredWordsMode:
     _SIZE_WINDOW = SIZE_100_WORDS_WINDOW
     TITLE = '100 слов'
-    LIST_WORDS = []
     USER_LIST_WORDS = {'correct': [], 'incorrect': {'user_word': [], 'incorrect_word': [],
                                                     'correct_answer': []}}
 
     def __init__(self, root):
         self.root = root
+
         self.window = Toplevel(self.root)
+        self.frame = tk.Frame(self.window)
+        self.window.focus_set()
         self.window.title(self.TITLE)
         self.window.geometry(self._SIZE_WINDOW)
+
         self.window_mode = None
         self.text_worker = None
 
@@ -27,42 +30,36 @@ class OneHundredWordsMode:
         self.button_clicked.set(False)
 
         self.set_header(self.window, self.TITLE)
-        self.words_worker = ListboxWordRedactor(self.window, words_list=self.LIST_WORDS)
+        self.frame.pack(side=tk.LEFT, padx=(10, 0))
 
-        self.set_language(self.words_worker.frame)
+        self.words_worker = ListBoxEditor(master=self.frame)
+        self.first_list = self.words_worker.FIRST_LANGUAGE_LIST
+        self.second_list = self.words_worker.SECOND_LANGUAGE_LIST
+        self.words_worker.update_listbox()
 
         self.clear_btn = tk.Button(self.window, text='Очистить список',
                                    width=30, height=5,
                                    font=10, bg='#DC6060',
-                                   command=self.words_worker.clear_list
+                                   command=self.words_worker.clear_lists
                                    )
         self.start_btn = tk.Button(self.window, text='Начать',
                                    width=30, height=5,
                                    font=10, bg='#60DC70',
                                    command=self.start_mode
                                    )
-        self.clear_btn.pack(pady=15)
-        self.start_btn.pack()
+        self.clear_btn.pack(pady=(150, 0))
+        self.start_btn.pack(pady=15)
 
-    def change_error(self, text):
-        self.text_var.set(text)
+        # error text field
+        self.error_text = tk.StringVar()
+        self.main_win_error = tk.BooleanVar()
+        self.main_win_error.set(False)
 
-    def set_language(self, frame):
-        def on_select(event):
-            to_lang = combo_from.get()
-            from_lang = combo_to.get()
-            self.text_worker = TextWorker(fl=from_lang, tl=to_lang)
-
-        combo_from = ttk.Combobox(frame, values=LANGUAGES_LIST, state='readonly')
-        combo_from.set("Язык ваших слов")
-        combo_to = ttk.Combobox(frame, values=LANGUAGES_LIST, state='readonly')
-        combo_to.set("Ваш язык для перевода")
-
-        combo_from.grid(column=0, row=0, padx=5, pady=(0, 60))
-
-        combo_to.grid(column=0, row=0, padx=5, pady=(0, 5))
-        combo_to.bind('<<ComboboxSelected>>', on_select)
-        combo_to.bind('<<ComboboxSelected>>', on_select)
+    def set_error(self, text, window):
+        self.error_text.set(text)
+        error_label = Label(window, textvariable=self.error_text, fg='red')
+        self.main_win_error.set(True)
+        return error_label
 
     @staticmethod
     def set_header(window, label_text):
@@ -71,22 +68,16 @@ class OneHundredWordsMode:
         return label
 
     def start_mode(self):
-        if not self.words_worker.words_list:
-            self.words_worker.change_error('Чтобы начать работу, добавьте слова')
-
-        elif self.text_worker is None:
-            self.words_worker.change_error('Чтобы начать работу, выберите языки')
+        if not self.words_worker.FIRST_LANGUAGE_LIST:
+            error = self.set_error(text='Чтобы начать работу, добавьте слова', window=self.window)
+            error.pack()
         else:
             self.window.destroy()
             self.window_mode = Toplevel(self.root)
             self.window_mode.title(self.TITLE)
             self.window_mode.geometry(self._SIZE_WINDOW)
             self.set_header(self.window_mode, self.TITLE)
-
-            # error text field
-            self.text_var = tk.StringVar()
-            self.error = Label(self.window_mode, textvariable=self.text_var, fg='red')
-            self.error.pack()
+            self.window_mode.lift()
             self.create_question()
 
     def finish_mode(self):
@@ -95,8 +86,7 @@ class OneHundredWordsMode:
 
     def create_question(self):
         # Variables for working
-        radio_answer = None
-        words_list = self.words_worker.words_list
+        words_list = self.words_worker.FIRST_LANGUAGE_LIST
         counter = 1
         len_wl = len(words_list)
 
@@ -178,15 +168,15 @@ class OneHundredWordsMode:
             else:
                 # Randomize answers
                 try:
-                    other_words = random.sample(self.LIST_WORDS, 2)
+                    other_words = random.sample(self.second_list, 2)
 
-                    if word in other_words:
-                        other_words[other_words.index(word)] = random.choice(self.LIST_WORDS)
-
+                    translated_for_word = self.second_list[words_list.index(word)]
+                    if translated_for_word in other_words:
+                        other_words[other_words.index(translated_for_word)] = random.choice(self.second_list)
                     answers_list = [
-                        self.text_worker.text_translate(other_words[0], reverse=True),
-                        self.text_worker.text_translate(word, reverse=True),
-                        self.text_worker.text_translate(other_words[1], reverse=True)
+                        other_words[0],
+                        translated_for_word,
+                        other_words[1]
                     ]
                     random.shuffle(answers_list)
 
@@ -200,10 +190,10 @@ class OneHundredWordsMode:
                     radio_button3.pack(anchor=tk.W, padx=(50, 0))
 
                     continue_btn.configure(command=lambda: self.check_correct_answer(
-                        word, answers_list[int(radio_answer)])
-                    )
-                except ValueError:
-                    pass
+                        word, answers_list[int(selected_radio.get())])
+                                           )
+                except ValueError as e:
+                    print(f'Error {e}')
 
             continue_btn.pack(side=tk.RIGHT, anchor=tk.S,
                               padx=15, pady=15)
@@ -229,30 +219,29 @@ class OneHundredWordsMode:
 
     def check_correct_answer(self, check_word: str, entry_widget_text):
         self.button_clicked.set(True)
-        translated_word = self.text_worker.text_translate(entry_widget_text)
-        cap_checkword = check_word.capitalize()
+        cap_checkword_id = self.first_list.index(check_word)
+        user_word_id = None
 
-        if translated_word:
-            translated_word = translated_word.capitalize().strip()
-            print(f'Слово которое нужно перевести: {cap_checkword}')
-            print(f'Слово которое я написал и перевожу: {translated_word}')
+        try:
+            user_word_id = self.second_list.index(entry_widget_text)
+        except ValueError as e:
+            print(e)
 
-            if cap_checkword == translated_word:
-                self.USER_LIST_WORDS['correct'].append(cap_checkword)
+        if user_word_id is not None:
+            user_word = self.second_list[user_word_id].capitalize().strip()
+            checkword = self.first_list[user_word_id].capitalize().strip()
 
-                print(f"Correct {self.USER_LIST_WORDS['correct']}")
-                return translated_word
-            else:
-                self.USER_LIST_WORDS['incorrect']['incorrect_word'].append(check_word)
-                self.USER_LIST_WORDS['incorrect']['user_word'].append(entry_widget_text)
-                self.USER_LIST_WORDS['incorrect']['correct_answer'].append(
-                    self.text_worker.text_translate(check_word, reverse=True)
-                )
-                print(f"Incorrect {self.USER_LIST_WORDS['incorrect']}")
+            if cap_checkword_id == user_word_id:
+                self.USER_LIST_WORDS['correct'].append(checkword)
+                print(f"Correct {self.USER_LIST_WORDS['correct']}\n")
+                return user_word
         else:
-            self.USER_LIST_WORDS['incorrect']['incorrect_word'].append('None')
-            self.USER_LIST_WORDS['incorrect']['user_word'].append('None')
-            self.USER_LIST_WORDS['incorrect']['correct_answer'].append('None')
+            self.USER_LIST_WORDS['incorrect']['incorrect_word'].append(check_word)
+            self.USER_LIST_WORDS['incorrect']['user_word'].append(entry_widget_text)
+            self.USER_LIST_WORDS['incorrect']['correct_answer'].append(
+                self.second_list[cap_checkword_id]
+            )
+            print(f"Incorrect {self.USER_LIST_WORDS['incorrect']}")
 
     def result_table(self):
         def toogle_table():
@@ -266,6 +255,7 @@ class OneHundredWordsMode:
                 result_text_widget.pack_forget()
 
         def show_notification(event):
+
             index = result_text_widget.index(tk.CURRENT)
             current_word = result_text_widget.get(index + " wordstart", index + " wordend")
 
@@ -277,13 +267,13 @@ class OneHundredWordsMode:
 
         self.window_mode.geometry('900x500')
         self.set_header(self.window_mode,
-                        f'Правильных ответов: {len(self.USER_LIST_WORDS["correct"])} из {len(self.LIST_WORDS)}')
+                        f'Правильных ответов: {len(self.USER_LIST_WORDS["correct"])} из {len(self.first_list)}')
 
         result_text_widget = tk.Text(self.window_mode, height=10, width=80)
         result_text_widget.tag_configure("color1", foreground="green")
         result_text_widget.tag_configure("color2", foreground="red")
 
-        for word in self.LIST_WORDS:
+        for word in self.first_list:
             correct_ulw_word = word.capitalize()
 
             if correct_ulw_word in self.USER_LIST_WORDS['correct']:

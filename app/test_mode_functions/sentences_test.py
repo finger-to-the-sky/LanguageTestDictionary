@@ -1,4 +1,4 @@
-from config import SIZE_TEST_MODE_WINDOW
+from app.config import SIZE_TEST_MODE_WINDOW
 from tkinter import Label, Toplevel
 
 

@@ -1,5 +1,5 @@
 from tkinter import Toplevel
-from config import SIZE_TEST_MODE_WINDOW
+from app.config import SIZE_TEST_MODE_WINDOW
 
 
 class RedTestWordsMode:

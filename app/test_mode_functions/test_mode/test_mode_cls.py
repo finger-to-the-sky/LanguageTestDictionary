@@ -139,25 +139,15 @@ class TestModeClass:
                 is_usually_question = True
 
             counter_label.configure(text=f'{counter}/{len_wl}')
-            counter_label.pack(
-                side=tk.LEFT,
-                anchor=tk.N,
-                padx=(15, 0), pady=15
-            )
+            counter_label.pack(side=tk.LEFT, anchor=tk.N, padx=(15, 0), pady=15
+                               )
             question_label.configure(text=f'{word} -')
-            question_label.pack(
-                side=tk.LEFT,
-                anchor=tk.N,
-                padx=(15, 0), pady=15
-            )
+            question_label.pack(side=tk.LEFT, anchor=tk.N, padx=(15, 0), pady=15
+                                )
             # Settings for different questions
             if is_usually_question:
-                answer_entry.pack(
-                    side=tk.LEFT,
-                    anchor=tk.N,
-                    padx=(15, 0),
-                    pady=(20, 15)
-                )
+                answer_entry.pack(side=tk.LEFT, anchor=tk.N, padx=(15, 0), pady=(20, 15)
+                                  )
                 continue_btn.configure(command=lambda: self.check_correct_answer(word, answer_entry.get()))
             else:
                 # Randomize answers
@@ -248,7 +238,6 @@ class TestModeClass:
     def result_table(self):
         def toogle_table():
             self.is_visible_results.set(not self.is_visible_results.get())
-
             if self.is_visible_results.get():
                 hidden_btn.configure(text='Cкрыть результаты')
                 result_text_widget.pack()
@@ -257,7 +246,6 @@ class TestModeClass:
                 result_text_widget.pack_forget()
 
         def show_notification(event):
-
             index = result_text_widget.index(tk.CURRENT)
             current_word = result_text_widget.get(index + " wordstart", index + " wordend")
 
@@ -270,7 +258,6 @@ class TestModeClass:
                 answer = messagebox.askquestion(title='Добавить слово?',
                                                 message=f"Вы ввели: {user_word}\nПравильный перевод: {result}"
                                                         "\nДобавить слово в Красный список?")
-
                 if answer == 'yes':
                     add_words_to_lists(word=current_word, translate=result)
                 else:
@@ -286,19 +273,14 @@ class TestModeClass:
 
         for word in self.first_list:
             correct_ulw_word = word.capitalize()
-
             if correct_ulw_word in self.USER_LIST_WORDS['correct']:
                 result_text_widget.insert(tk.END,
                                           word + ' ',
                                           'color1')
             else:
-
                 result_text_widget.tag_bind('hover', '<Button-1>', show_notification)
                 result_text_widget.tag_configure('hover')
-
-                result_text_widget.insert(tk.END,
-                                          word + ' ',
-                                          ('color2', 'hover'))
+                result_text_widget.insert(tk.END, word + ' ', ('color2', 'hover'))
 
         hidden_btn = tk.Button(self.window_mode,
                                text='Показать результаты',
@@ -312,7 +294,6 @@ class TestModeClass:
                                  self.clear_user_answers_list(),
                                  self.finish_mode())
                              )
-
         restart_btn = tk.Button(self.window_mode, text='Начать заново', width=25, height=2,
                                 command=lambda: (
                                     self.clear_user_answers_list(),

@@ -21,6 +21,7 @@ class ListBoxAdderClass:
         self.error_add_win.set(False)
         self.error = tk.BooleanVar()
         self.error.set(False)
+        self.count_window = 0
 
         self.first_label = Label(self.window, text='Тестируемые слова', font=('Helvetica', 10))
         self.second_label = Label(self.window, text='Перевод тестируемых слов', font=('Helvetica', 10))
@@ -29,17 +30,19 @@ class ListBoxAdderClass:
         self.second_label.grid(column=1, row=0)
 
         self.first_words_list_widget = tk.Listbox(self.window, selectmode=tk.SINGLE, width=30, height=20)
-        self.first_words_list_widget.grid(column=0, row=1, padx=(0, 10))
-
         self.second_words_list_widget = tk.Listbox(self.window, selectmode=tk.SINGLE, width=30, height=20)
+
+        self.first_words_list_widget.bind('<Enter>', self.first_words_list_widget.config(cursor='hand2'))
+        self.second_words_list_widget.bind('<Enter>', self.second_words_list_widget.config(cursor='hand2'))
+
+        self.first_words_list_widget.grid(column=0, row=1, padx=(0, 10))
         self.second_words_list_widget.grid(column=1, row=1)
+
         self.add_word_btn = tk.Button(self.window, text='Добавить слова', width=20, height=2,
                                       command=self.add_word_to_listwords)
-
         self.add_word_btn.grid(column=0, row=2, columnspan=2, pady=(15, 0))
 
     def check_len_list(self):
-
         if len(self.SECOND_LANGUAGE_LIST) >= 30 and self.is_red_test is True:
             return False, 'Вы не можете добавить больше 30 слов!'
         elif len(self.SECOND_LANGUAGE_LIST) >= 100:
@@ -80,22 +83,20 @@ class ListBoxAdderClass:
         new_window.title(title)
         new_window.lift(root)
         new_window.protocol('WM_DELETE_WINDOW',
-                            lambda: self.cancel_adding(new_window,
-                                                       message='Вы уверены, что хотите прервать добавление слова?'))
+                            lambda: self.confirm_cancel(new_window,
+                                                        message='Вы уверены, что хотите прервать добавление слова?'))
         return new_window
 
-    def cancel_adding(self, window, title='Подтвердите операцию', message=None):
-
+    def confirm_cancel(self, window, title='Подтвердите операцию', message=None):
         answer = messagebox.askquestion(title=title,
                                         message=message)
         window.focus_set()
+        self.count_window -= 1
         if answer == 'yes':
             if len(self.FIRST_LANGUAGE_LIST) > len(self.SECOND_LANGUAGE_LIST):
                 self.FIRST_LANGUAGE_LIST.pop(-1)
                 self.update_listbox()
             window.destroy()
-        else:
-            pass
 
     def add_word_to_list(self, word_widget, current_list: list, current_window):
         word = word_widget.get().strip()
@@ -296,7 +297,6 @@ class ListBoxEditor(FileLoaderClass):
         self.confirm_button = None
         self.delete_word_button = None
         self.label_for_edit_win = None
-        self.count_window = 0
         self.first_words_list_widget.bind('<<ListboxSelect>>', self.edit_selected_word)
         self.second_words_list_widget.bind('<<ListboxSelect>>', self.edit_selected_word)
 
@@ -327,16 +327,16 @@ class ListBoxEditor(FileLoaderClass):
     def edit_selected_word(self, event):
         if len(self.FIRST_LANGUAGE_LIST) == 0:
             return
+
         if self.count_window <= 1:
             selected_index = event.widget.curselection()
             nw = self.create_new_window(root=self.window, geometry='400x120+800+400',
                                         title='Редактирование тестируемого слова')
 
             nw.protocol('WM_DELETE_WINDOW',
-                        lambda: self.cancel_adding(nw,
-                                                   message='Вы уверены, что хотите прервать редактирование слова?'))
+                        lambda: self.confirm_cancel(nw,
+                                                    message='Вы уверены, что хотите прервать редактирование слова?'))
 
-            self.count_window += 1
             if selected_index:
                 self.create_edit_window(new_window=nw, words_list=self.FIRST_LANGUAGE_LIST,
                                         label_text='Введите слово',
@@ -345,6 +345,7 @@ class ListBoxEditor(FileLoaderClass):
                 selected_word = event.widget.get(selected_index[0])
                 self.edit_entry.delete(0, tk.END)
                 self.edit_entry.insert(tk.END, selected_word)
+                self.count_window += 1
             else:
                 nw.destroy()
         else:
@@ -365,11 +366,10 @@ class ListBoxEditor(FileLoaderClass):
                 edit_word_in_json(current_list[selected_index[0]], edited_word)
             current_list[selected_index[0]] = edited_word
             self.update_listbox()
-        self.count_window = 0
+        self.count_window -= 1
 
     def delete_word(self, current_widget=None):
         selected_index = current_widget.curselection()
-
         if selected_index:
             if self.is_red_test is True:
                 delete_word_from_cache(deleted_word=self.FIRST_LANGUAGE_LIST[selected_index[0]])
@@ -378,4 +378,4 @@ class ListBoxEditor(FileLoaderClass):
             self.SECOND_LANGUAGE_LIST.pop(selected_index[0])
             self.update_listbox()
         self.clear_error()
-        self.count_window = 0
+        self.count_window -= 1

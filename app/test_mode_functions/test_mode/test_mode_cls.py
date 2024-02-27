@@ -1,6 +1,8 @@
 import random
 import tkinter as tk
 from tkinter import Label, Toplevel, messagebox
+
+from app.config import SIZE_TEST_MODE_WINDOW
 from app.text_field_functionality import russian_add_hotkeys, create_context_menu
 from app.test_mode_functions.test_mode.listbox_editor import ListBoxEditor
 from app.other.json_functions import add_words_to_lists
@@ -15,6 +17,19 @@ class TestModeClass:
         self.title = title
         self.size_window = size_window
         self.is_red_test = is_red_test
+        self.first_list = first_list
+        self.second_list = second_list
+
+        self.window_mode = None
+        self.text_worker = None
+        self.is_visible_results = tk.BooleanVar()
+        self.is_visible_results.set(False)
+        self.button_clicked = tk.BooleanVar()
+        self.button_clicked.set(False)
+        # error text field
+        self.error_text = tk.StringVar()
+        self.main_win_error = tk.BooleanVar()
+        self.main_win_error.set(False)
 
         self.window = Toplevel(self.root)
         self.frame = tk.Frame(self.window)
@@ -22,24 +37,13 @@ class TestModeClass:
         self.window.title(self.title)
         self.window.geometry(self.size_window)
 
-        self.window_mode = None
-        self.text_worker = None
-
-        self.is_visible_results = tk.BooleanVar()
-        self.is_visible_results.set(False)
-        self.button_clicked = tk.BooleanVar()
-        self.button_clicked.set(False)
-
         self.set_header(self.window, self.title)
         self.frame.pack(side=tk.LEFT, padx=(10, 0))
 
-        self.words_worker = ListBoxEditor(master=self.frame, is_red_test=self.is_red_test)
-
-        self.first_list = first_list
-        self.second_list = second_list
+        self.words_worker = ListBoxEditor(master=self.frame,
+                                          is_red_test=self.is_red_test)
         self.words_worker.FIRST_LANGUAGE_LIST = self.first_list
         self.words_worker.SECOND_LANGUAGE_LIST = self.second_list
-
         self.words_worker.update_listbox()
 
         self.clear_btn = tk.Button(self.window, text='Очистить список',
@@ -54,27 +58,6 @@ class TestModeClass:
                                    )
         self.clear_btn.pack(pady=(150, 0))
         self.start_btn.pack(pady=15)
-
-        # error text field
-        self.error_text = tk.StringVar()
-        self.main_win_error = tk.BooleanVar()
-        self.main_win_error.set(False)
-        self.window.bind("<Button-1>", lambda event: self.on_click(event))
-        self.frame.bind("<Button-1>", lambda event: self.on_click(event))
-
-    def on_click(self, event):
-        widget = event.widget
-        if isinstance(widget, (tk.Button, tk.Listbox, tk.Entry)):
-            return
-
-        info_click = event.widget.winfo_containing(event.x_root, event.y_root)
-        if widget == info_click:
-            self.words_worker.is_visible = False
-
-            try:
-                self.words_worker.edit_field_destroy()
-            except AttributeError:
-                pass
 
     def set_error(self, text, window):
         self.error_text.set(text)
@@ -96,7 +79,7 @@ class TestModeClass:
             self.window.destroy()
             self.window_mode = Toplevel(self.root)
             self.window_mode.title(self.title)
-            self.window_mode.geometry(self.size_window)
+            self.window_mode.geometry(SIZE_TEST_MODE_WINDOW)
             self.set_header(self.window_mode, self.title)
             self.window_mode.lift()
             self.create_question()
@@ -144,28 +127,17 @@ class TestModeClass:
                                        command=lambda: selected_radio.get()
                                        )
         # Buttons
-        continue_btn = tk.Button(
-            self.window_mode,
-            text='Далее',
-            width=10, height=2,
-            bg='#60DC70'
-        )
-        quit_btn = tk.Button(
-            self.window_mode,
-            text='Завершить',
-            width=15, height=2,
-            bg='#DC6060',
-            command=self.finish_mode
-        )
+        continue_btn = tk.Button(self.window_mode, text='Далее',
+                                 width=10, height=2, bg='#60DC70')
+        quit_btn = tk.Button(self.window_mode, text='Завершить',
+                             width=15, height=2, bg='#DC6060',
+                             command=self.finish_mode)
         # Main loop for working function
         for word in set(words_list):
-
-            # Randomize current question
             is_usually_question = random.choice([True, False])
             if len_wl <= 2:
                 is_usually_question = True
 
-            # Change counter
             counter_label.configure(text=f'{counter}/{len_wl}')
             counter_label.pack(
                 side=tk.LEFT,
@@ -248,6 +220,7 @@ class TestModeClass:
             user_word_id = self.second_list.index(entry_widget_text)
         except ValueError as e:
             print(e)
+            user_word_id = None
 
         if user_word_id is not None:
             user_word = self.second_list[user_word_id].capitalize().strip()
@@ -257,6 +230,13 @@ class TestModeClass:
                 self.USER_LIST_WORDS['correct'].append(checkword)
                 print(f"Correct {self.USER_LIST_WORDS['correct']}\n")
                 return user_word
+            else:
+                self.USER_LIST_WORDS['incorrect']['incorrect_word'].append(check_word)
+                self.USER_LIST_WORDS['incorrect']['user_word'].append(entry_widget_text)
+                self.USER_LIST_WORDS['incorrect']['correct_answer'].append(
+                    self.second_list[cap_checkword_id]
+                )
+                print(f"Incorrect {self.USER_LIST_WORDS['incorrect']}")
         else:
             self.USER_LIST_WORDS['incorrect']['incorrect_word'].append(check_word)
             self.USER_LIST_WORDS['incorrect']['user_word'].append(entry_widget_text)

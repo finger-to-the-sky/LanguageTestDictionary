@@ -48,7 +48,6 @@ def edit_word_in_json(word, edited):
 def delete_word_from_cache(deleted_word):
     words = get_words()
     for i, w in enumerate(words):
-        print(i, w)
         if w['word'] == deleted_word or w['translate'] == deleted_word:
             words.pop(i)
             break

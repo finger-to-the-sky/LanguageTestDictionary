@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import Label, filedialog, messagebox
+from docx.opc.exceptions import PackageNotFoundError
 from app.other.instruction.instructions import set_instruction_field
 from app.test_mode_functions.test_mode_choose import TestModeChooseClass
 from docx import Document
@@ -8,7 +9,6 @@ from app.other.json_functions import add_words_to_lists, delete_word_from_cache,
 
 
 class ListBoxAdderClass:
-    is_visible = False
     FIRST_LANGUAGE_LIST = []
     SECOND_LANGUAGE_LIST = []
 
@@ -16,11 +16,14 @@ class ListBoxAdderClass:
         self.window = master
         self.is_red_test = is_red_test
 
-        # error text field
         self.text_var = tk.StringVar()
+        self.error_add_win = tk.BooleanVar()
+        self.error_add_win.set(False)
+        self.error = tk.BooleanVar()
+        self.error.set(False)
 
-        self.first_label = Label(self.window, text='Тестируемые слова')
-        self.second_label = Label(self.window, text='Перевод тестируемых слов')
+        self.first_label = Label(self.window, text='Тестируемые слова', font=('Helvetica', 10))
+        self.second_label = Label(self.window, text='Перевод тестируемых слов', font=('Helvetica', 10))
 
         self.first_label.grid(column=0, row=0)
         self.second_label.grid(column=1, row=0)
@@ -35,10 +38,14 @@ class ListBoxAdderClass:
 
         self.add_word_btn.grid(column=0, row=2, columnspan=2, pady=(15, 0))
 
-        self.error_add_win = tk.BooleanVar()
-        self.error_add_win.set(False)
-        self.error = tk.BooleanVar()
-        self.error.set(False)
+    def check_len_list(self):
+
+        if len(self.SECOND_LANGUAGE_LIST) >= 30 and self.is_red_test is True:
+            return False, 'Вы не можете добавить больше 30 слов!'
+        elif len(self.SECOND_LANGUAGE_LIST) >= 100:
+            return False, 'Вы не можете добавить больше 100 слов!'
+        else:
+            return True,
 
     def set_error(self, text, window, error_status):
         self.text_var.set(text)
@@ -72,12 +79,15 @@ class ListBoxAdderClass:
         new_window.geometry(geometry)
         new_window.title(title)
         new_window.lift(root)
-        new_window.protocol('WM_DELETE_WINDOW', lambda: self.cancel_adding(new_window))
+        new_window.protocol('WM_DELETE_WINDOW',
+                            lambda: self.cancel_adding(new_window,
+                                                       message='Вы уверены, что хотите прервать добавление слова?'))
         return new_window
 
-    def cancel_adding(self, window):
-        answer = messagebox.askquestion(title='Подтвердите операцию',
-                                        message="Вы уверены, что хотите прервать добавление слова?")
+    def cancel_adding(self, window, title='Подтвердите операцию', message=None):
+
+        answer = messagebox.askquestion(title=title,
+                                        message=message)
         window.focus_set()
         if answer == 'yes':
             if len(self.FIRST_LANGUAGE_LIST) > len(self.SECOND_LANGUAGE_LIST):
@@ -137,12 +147,9 @@ class ListBoxAdderClass:
     @check_err
     def add_word_to_listwords(self):
 
-        if len(self.SECOND_LANGUAGE_LIST) >= 100:
-            self.err = self.set_error('Вы не можете добавить больше 100 слов!', window=self.window,
-                                      error_status=self.error)
-            self.err.grid(column=0, row=4)
-        elif len(self.SECOND_LANGUAGE_LIST) >= 2 and self.is_red_test is True:
-            self.err = self.set_error('Вы не можете добавить больше 30 слов!', window=self.window,
+        checker = self.check_len_list()
+        if checker[0] is False:
+            self.err = self.set_error(checker[1], window=self.window,
                                       error_status=self.error)
             self.err.grid(column=0, row=4)
 
@@ -171,7 +178,6 @@ class ListBoxAdderClass:
         self.first_words_list_widget.delete(0, tk.END)
         self.second_words_list_widget.delete(0, tk.END)
         self.clear_error()
-        self.is_visible = False
         if self.is_red_test is True:
             clear_cache()
 
@@ -193,39 +199,46 @@ class FileLoaderClass(ListBoxAdderClass):
 
         set_instruction_field(window=win.window, text='Перед загрузкой ознакомьтесь с моей инструкцией по загрузке'),
 
-        win.create_test_mode_button('TXT', func=(self.load_from_txt,), side_button='left', padx=15)
-        win.create_test_mode_button('WORD', func=(self.load_from_word,), side_button='left', padx=45)
-        win.create_test_mode_button('EXCEL', func=(self.load_from_excel,), side_button='right', padx=15)
+        win.create_test_mode_button('TXT', func=(self.load_from_txt,), side='left', padx=15)
+        win.create_test_mode_button('WORD', func=(self.load_from_word,), side='left', padx=45)
+        win.create_test_mode_button('EXCEL', func=(self.load_from_excel,), side='right', padx=15)
 
     def packing_words(self, words_list, excel=False):
         if excel is True:
             for word in words_list:
-                if len(self.FIRST_LANGUAGE_LIST) >= 100 or len(self.SECOND_LANGUAGE_LIST) >= 100:
+                checker = self.check_len_list()
+                if checker[0] is False:
                     break
-                elif (len(self.FIRST_LANGUAGE_LIST) >= 30 and self.is_red_test is True
-                      or len(self.SECOND_LANGUAGE_LIST) >= 30 and self.is_red_test is True):
-                    break
+
                 try:
                     first_word = word[0].replace('\n', '').strip()
                     second_word = word[1].replace('\n', '').strip()
+                    if self.is_red_test is True:
+                        add_words_to_lists(word=first_word, translate=second_word)
+
                     self.FIRST_LANGUAGE_LIST.append(first_word)
                     self.SECOND_LANGUAGE_LIST.append(second_word)
                 except IndexError:
                     continue
         else:
             for word in words_list:
-                if len(self.FIRST_LANGUAGE_LIST) >= 100 or len(self.SECOND_LANGUAGE_LIST) >= 100:
+                checker = self.check_len_list()
+                if checker[0] is False:
                     break
-                elif (len(self.FIRST_LANGUAGE_LIST) >= 30 and self.is_red_test is True
-                      or len(self.SECOND_LANGUAGE_LIST) >= 30 and self.is_red_test is True):
-                    break
+
                 try:
                     dash = word.index('-')
                     first_word = word[:dash].replace('\n', '').strip()
                     second_word = word[dash + 1:].replace('\n', '').strip()
+                    if second_word[-1] == ';':
+                        second_word = second_word[:-1]
+
+                    if self.is_red_test is True:
+                        add_words_to_lists(word=first_word, translate=second_word)
+
                     self.FIRST_LANGUAGE_LIST.append(first_word)
                     self.SECOND_LANGUAGE_LIST.append(second_word)
-                except Exception as e:
+                except Exception:
                     pass
         self.update_listbox()
 
@@ -237,10 +250,11 @@ class FileLoaderClass(ListBoxAdderClass):
                 kwargs['filepath'] = filepath
                 result = func(*args, **kwargs)
                 return result
-            except FileNotFoundError:
+            except (FileNotFoundError, PackageNotFoundError, UnicodeDecodeError):
                 error = args[0].set_error(text='Некорректно выбран файл', window=args[0].window,
                                           error_status=args[0].error_add_win)
                 error.grid(column=0, row=4)
+                messagebox.showerror(title='Ошибка', message='Некорректно выбран файл')
 
         return wrapper
 
@@ -253,58 +267,88 @@ class FileLoaderClass(ListBoxAdderClass):
 
     @enter_file
     def load_from_word(self, filepath=None):
-        doc = Document(filepath)
-        list_words = [paragraph.text for paragraph in doc.paragraphs]
-        if len(list_words) == 1:
-            list_words = list_words[0].split(';')
-        self.packing_words(list_words)
+        try:
+            doc = Document(filepath)
+            list_words = [paragraph.text for paragraph in doc.paragraphs]
+            if len(list_words) == 1:
+                list_words = list_words[0].split(';')
+            self.packing_words(list_words)
+        except ValueError:
+            messagebox.showerror(title='Ошибка',
+                                 message='Функция загрузки word поддерживает только форматы doc или docx')
 
     @enter_file
     def load_from_excel(self, filepath=None):
-        list_words_excel = read_excel(filepath).values
-        self.packing_words(words_list=list_words_excel, excel=True)
+        try:
+            list_words_excel = read_excel(filepath).values
+            self.packing_words(words_list=list_words_excel, excel=True)
+
+        except ValueError:
+            messagebox.showerror(title='Ошибка',
+                                 message='Функция загрузки excel поддерживает только формат xlsx')
 
 
 class ListBoxEditor(FileLoaderClass):
 
     def __init__(self, master, is_red_test):
         super().__init__(master, is_red_test)
-
+        self.edit_entry = None
+        self.confirm_button = None
+        self.delete_word_button = None
+        self.label_for_edit_win = None
+        self.count_window = 0
         self.first_words_list_widget.bind('<<ListboxSelect>>', self.edit_selected_word)
         self.second_words_list_widget.bind('<<ListboxSelect>>', self.edit_selected_word)
 
-    def edit_selected_word(self, event):
-        selected_index = event.widget.curselection()
-        if selected_index:
-            self.edit_field_create(event.widget)
-            selected_word = event.widget.get(selected_index[0])
-            self.edit_entry.delete(0, tk.END)
-            self.edit_entry.insert(tk.END, selected_word)
+    def create_edit_window(self, new_window, current_listbox,
+                           label_text: str = None,
+                           words_list: list = None,
+                           is_second=False):
+        self.label_for_edit_win = Label(new_window, text=label_text)
+        self.label_for_edit_win.grid(column=0, row=0, sticky="nw", padx=10, pady=(15, 0))
 
-    def edit_field_create(self, current_listbox=None):
-        if self.is_visible:
-            return
-
-        self.edit_entry = tk.Entry(self.window, width=30)
-        self.confirm_button = tk.Button(self.window, text="Редактировать")
-        self.delete_word_button = tk.Button(self.window, text="Удалить")
+        self.edit_entry = tk.Entry(new_window, width=30)
+        self.confirm_button = tk.Button(new_window, text="Редактировать")
+        self.delete_word_button = tk.Button(new_window, text="Удалить")
 
         if current_listbox:
-            self.confirm_button.configure(command=lambda: self.confirm_edit(current_widget=current_listbox))
-            self.delete_word_button.configure(command=lambda: self.delete_word(current_widget=current_listbox))
+            self.confirm_button.configure(
+                command=lambda: (self.confirm_edit(current_widget=current_listbox), new_window.destroy()))
+            self.delete_word_button.configure(
+                command=lambda: (self.delete_word(current_widget=current_listbox), new_window.destroy()))
         else:
-            print('Error')
+            print('Undefined current listbox')
+            pass
 
-        self.edit_entry.grid(column=3, row=1, pady=(0, 10))
-        self.confirm_button.grid(column=4, row=1, padx=(10, 0), pady=(0, 15))
-        self.delete_word_button.grid(column=5, row=1, padx=(10, 0), pady=(0, 15))
-        self.is_visible = True
+        self.edit_entry.grid(column=0, row=1, padx=10, pady=10)
+        self.confirm_button.grid(row=2, column=1, sticky="se", padx=10, pady=(0, 15))
+        self.delete_word_button.grid(row=2, column=2, sticky="se", padx=10, pady=(0, 15))
 
-    def edit_field_destroy(self):
-        self.edit_entry.destroy()
-        self.confirm_button.destroy()
-        self.delete_word_button.destroy()
-        self.is_visible = False
+    def edit_selected_word(self, event):
+        if len(self.FIRST_LANGUAGE_LIST) == 0:
+            return
+        if self.count_window <= 1:
+            selected_index = event.widget.curselection()
+            nw = self.create_new_window(root=self.window, geometry='400x120+800+400',
+                                        title='Редактирование тестируемого слова')
+
+            nw.protocol('WM_DELETE_WINDOW',
+                        lambda: self.cancel_adding(nw,
+                                                   message='Вы уверены, что хотите прервать редактирование слова?'))
+
+            self.count_window += 1
+            if selected_index:
+                self.create_edit_window(new_window=nw, words_list=self.FIRST_LANGUAGE_LIST,
+                                        label_text='Введите слово',
+                                        current_listbox=event.widget)
+
+                selected_word = event.widget.get(selected_index[0])
+                self.edit_entry.delete(0, tk.END)
+                self.edit_entry.insert(tk.END, selected_word)
+            else:
+                nw.destroy()
+        else:
+            return
 
     def confirm_edit(self, current_widget=None):
         edited_word = self.edit_entry.get().strip()
@@ -321,7 +365,7 @@ class ListBoxEditor(FileLoaderClass):
                 edit_word_in_json(current_list[selected_index[0]], edited_word)
             current_list[selected_index[0]] = edited_word
             self.update_listbox()
-            self.edit_field_destroy()
+        self.count_window = 0
 
     def delete_word(self, current_widget=None):
         selected_index = current_widget.curselection()
@@ -333,7 +377,5 @@ class ListBoxEditor(FileLoaderClass):
             self.FIRST_LANGUAGE_LIST.pop(selected_index[0])
             self.SECOND_LANGUAGE_LIST.pop(selected_index[0])
             self.update_listbox()
-            self.edit_field_destroy()
-
-        self.is_visible = False
         self.clear_error()
+        self.count_window = 0

@@ -1,10 +1,10 @@
 from tkinter import Toplevel, Label
-from app.config import SIZE_TEST_MODE_WINDOW
+from app.config import SIZE_TEST_MODE_CHOOSE_WINDOW
 from tkinter.ttk import Style, Button
 
 
 class TestModeChooseClass:
-    _SIZE_WINDOW = SIZE_TEST_MODE_WINDOW
+    _SIZE_WINDOW = SIZE_TEST_MODE_CHOOSE_WINDOW
     TITLE = 'Режим тестирования'
 
     def __init__(self, root):
@@ -18,7 +18,7 @@ class TestModeChooseClass:
 
     def create_test_mode_button(self, text_button: str, cls_worker=None, func: tuple = None,
                                 style_button='TestButton.TButton',
-                                side_button=None, anchor=None, padx=None, pady=None):
+                                *args, **kwargs):
 
         default_button_style = Style()
         default_button_style.configure(style='TestButton.TButton',
@@ -27,10 +27,7 @@ class TestModeChooseClass:
                                        background='#d3d3d3',
                                        wraplength=220
                                        )
-        button = Button(self.window,
-                        text=text_button,
-                        style=style_button,
-                        width=15)
+        button = Button(self.window, text=text_button, style=style_button, width=15)
 
         if cls_worker:
             button.configure(command=lambda: (cls_worker(root=self.root), self.window.destroy()))
@@ -38,9 +35,8 @@ class TestModeChooseClass:
             try:
                 button.configure(command=lambda: (func[0](**func[1]), self.window.destroy()))
             except IndexError:
-                print('aa')
+                print('Функция или Класс не были найдены')
             else:
                 button.configure(command=lambda: (func[0](), self.window.destroy()))
 
-        button.pack(side=side_button, anchor=anchor,
-                    padx=padx, pady=pady, ipady=60)
+        button.pack(*args, **kwargs, ipady=60)

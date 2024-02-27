@@ -10,17 +10,6 @@ class TextWorker:
         self.fl = fl
         self.tl = tl
 
-    def text_translate(self, text, reverse=False):
-        try:
-            if reverse:
-                result = self.t.translate(src=self.tl, dest=self.fl, text=text)
-            else:
-                result = self.t.translate(src=self.fl, dest=self.tl, text=text)
-            return result.text
-        except TypeError:
-            pass
-        return None
-
     @staticmethod
     def copy_text(root, text_widgets):
         active_widget = root.focus_get()

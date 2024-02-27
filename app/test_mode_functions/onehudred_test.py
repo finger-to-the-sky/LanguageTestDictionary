@@ -1,10 +1,9 @@
-from tkinter import Toplevel
-from app.config import SIZE_TEST_MODE_WINDOW, SIZE_100_WORDS_WINDOW
+from app.config import SIZE_TEST_MODE_MAIN_WINDOW
 from app.test_mode_functions.test_mode.test_mode_cls import TestModeClass
 
 
 class OneHundredMode:
-    _SIZE_WINDOW = SIZE_100_WORDS_WINDOW
+    _SIZE_WINDOW = SIZE_TEST_MODE_MAIN_WINDOW
     TITLE = '100 слов'
     FIRST_LIST_WORDS = []
     SECOND_LIST_WORDS = []

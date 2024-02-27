@@ -1,3 +1,4 @@
+import tkinter
 from tkinter import Tk, Frame, Label, Text, Button
 from app.functions import set_languages, test_mode_activate
 from app.text_field_functionality import russian_add_hotkeys, create_context_menu
@@ -41,6 +42,6 @@ russian_add_hotkeys(root=root, text_widgets=(user_text_widget, translated_text_w
 # Create context menu for right mouse button
 create_context_menu(root=root, text_widgets=(user_text_widget, translated_text_widget))
 
-set_instruction_field(root, text='Инструкция по работе с English Test Dictionary')
+set_instruction_field(root, text='Инструкция по работе с English Test Dictionary', side=tkinter.BOTTOM, pady=30)
 
 root.mainloop()

@@ -1,11 +1,11 @@
 import random
 import tkinter as tk
-from tkinter import Label, Toplevel, messagebox
+from tkinter import Label, Toplevel, messagebox, ttk, END
 
 from app.config import SIZE_TEST_MODE_WINDOW
 from app.text_field_functionality import russian_add_hotkeys, create_context_menu
-from app.test_mode_functions.test_mode.listbox_editor import ListBoxEditor
-from app.other.json_functions import add_words_to_lists
+from app.test_mode_functions.test_mode.listbox_worker.listbox_editor import ListBoxEditor
+from app.other.db.json_functions import add_word_in_db
 
 
 class TestModeClass:
@@ -26,7 +26,9 @@ class TestModeClass:
         self.is_visible_results.set(False)
         self.button_clicked = tk.BooleanVar()
         self.button_clicked.set(False)
+
         # error text field
+        self.error = None
         self.error_text = tk.StringVar()
         self.main_win_error = tk.BooleanVar()
         self.main_win_error.set(False)
@@ -46,24 +48,32 @@ class TestModeClass:
         self.words_worker.SECOND_LANGUAGE_LIST = self.second_list
         self.words_worker.update_listbox()
 
-        self.clear_btn = tk.Button(self.window, text='Очистить список',
-                                   width=30, height=5,
+        self.clear_btn = tk.Button(self.frame, text='Очистить список',
+                                   width=20, height=3,
                                    font=10, bg='#DC6060',
-                                   command=self.words_worker.clear_lists
-                                   )
-        self.start_btn = tk.Button(self.window, text='Начать',
-                                   width=30, height=5,
+                                   command=lambda: (self.words_worker.clear_lists(), self.clear_error()
+                                                    ))
+        self.start_btn = tk.Button(self.frame, text='Начать',
+                                   width=20, height=3,
                                    font=10, bg='#60DC70',
                                    command=self.start_mode
                                    )
-        self.clear_btn.pack(pady=(150, 0))
-        self.start_btn.pack(pady=15)
+        self.clear_btn.grid(column=2, row=1, pady=(220, 0), padx=(20, 0))
+        self.start_btn.grid(column=2, row=1, pady=(370, 0), padx=(20, 0))
 
     def set_error(self, text, window):
         self.error_text.set(text)
         error_label = Label(window, textvariable=self.error_text, fg='red')
         self.main_win_error.set(True)
         return error_label
+
+    def clear_error(self):
+        if self.main_win_error.get() is True:
+            self.main_win_error.set(False)
+        try:
+            self.error.destroy()
+        except AttributeError:
+            pass
 
     @staticmethod
     def set_header(window, label_text):
@@ -73,13 +83,17 @@ class TestModeClass:
 
     def start_mode(self):
         if not self.words_worker.FIRST_LANGUAGE_LIST:
-            error = self.set_error(text='Чтобы начать работу, добавьте слова', window=self.window)
-            error.pack()
+            if self.main_win_error.get() is not True:
+                self.error = self.set_error(text='Чтобы начать работу, добавьте слова', window=self.frame)
+                self.error.grid()
         else:
+            self.clear_error()
             self.window.destroy()
+
             self.window_mode = Toplevel(self.root)
             self.window_mode.title(self.title)
             self.window_mode.geometry(SIZE_TEST_MODE_WINDOW)
+
             self.set_header(self.window_mode, self.title)
             self.window_mode.lift()
             self.create_question()
@@ -101,6 +115,7 @@ class TestModeClass:
 
         # Entry widget for answering with needed instruments
         answer_entry = tk.Entry(self.window_mode, width=30)
+        answer_entry.focus_set()
         russian_add_hotkeys(root=self.window_mode, text_widgets=[answer_entry])
         create_context_menu(root=self.window_mode, text_widgets=[answer_entry])
 
@@ -132,6 +147,9 @@ class TestModeClass:
         quit_btn = tk.Button(self.window_mode, text='Завершить',
                              width=15, height=2, bg='#DC6060',
                              command=self.finish_mode)
+
+        self.window_mode.bind("<Escape>", lambda event: self.finish_mode())
+
         # Main loop for working function
         for word in set(words_list):
             is_usually_question = random.choice([True, False])
@@ -149,6 +167,7 @@ class TestModeClass:
                 answer_entry.pack(side=tk.LEFT, anchor=tk.N, padx=(15, 0), pady=(20, 15)
                                   )
                 continue_btn.configure(command=lambda: self.check_correct_answer(word, answer_entry.get()))
+                self.window_mode.bind('<Return>', lambda event: self.check_correct_answer(word, answer_entry.get()))
             else:
                 # Randomize answers
                 try:
@@ -176,6 +195,9 @@ class TestModeClass:
                     continue_btn.configure(command=lambda: self.check_correct_answer(
                         word, answers_list[int(selected_radio.get())])
                                            )
+                    self.window_mode.bind('<Return>', lambda event: self.check_correct_answer(
+                        word, answers_list[int(selected_radio.get())])
+                                          )
                 except ValueError as e:
                     print(f'Error {e}')
 
@@ -201,94 +223,107 @@ class TestModeClass:
 
         self.result_table()
 
-    def check_correct_answer(self, check_word: str, entry_widget_text):
+    def check_correct_answer(self, check_word: str, user_text):
         self.button_clicked.set(True)
-        cap_checkword_id = self.first_list.index(check_word)
+        checkword_id = self.first_list.index(check_word)
+        fixed_user_text = user_text.strip().replace(', ', ',').replace(' , ', ',')
         user_word_id = None
-
         try:
-            user_word_id = self.second_list.index(entry_widget_text)
+            user_word_id = self.second_list.index(fixed_user_text)
         except ValueError as e:
             print(e)
             user_word_id = None
 
         if user_word_id is not None:
-            user_word = self.second_list[user_word_id].capitalize().strip()
-            checkword = self.first_list[user_word_id].capitalize().strip()
+            user_word = self.second_list[user_word_id].lower().strip()
+            checkword = self.first_list[user_word_id].lower().strip()
 
-            if cap_checkword_id == user_word_id:
+            if checkword_id == user_word_id:
                 self.USER_LIST_WORDS['correct'].append(checkword)
                 print(f"Correct {self.USER_LIST_WORDS['correct']}\n")
                 return user_word
             else:
-                self.USER_LIST_WORDS['incorrect']['incorrect_word'].append(check_word)
-                self.USER_LIST_WORDS['incorrect']['user_word'].append(entry_widget_text)
+                self.USER_LIST_WORDS['incorrect']['incorrect_word'].append(checkword)
+                self.USER_LIST_WORDS['incorrect']['user_word'].append(fixed_user_text)
                 self.USER_LIST_WORDS['incorrect']['correct_answer'].append(
-                    self.second_list[cap_checkword_id]
+                    self.second_list[checkword_id]
                 )
                 print(f"Incorrect {self.USER_LIST_WORDS['incorrect']}")
         else:
             self.USER_LIST_WORDS['incorrect']['incorrect_word'].append(check_word)
-            self.USER_LIST_WORDS['incorrect']['user_word'].append(entry_widget_text)
+            self.USER_LIST_WORDS['incorrect']['user_word'].append(user_text)
             self.USER_LIST_WORDS['incorrect']['correct_answer'].append(
-                self.second_list[cap_checkword_id]
+                self.second_list[checkword_id]
             )
             print(f"Incorrect {self.USER_LIST_WORDS['incorrect']}")
+
+    def on_click(self, event):
+        item = event.widget.selection()[0]
+        current_word = event.widget.item(item)['values'][0]
+
+        idx = self.USER_LIST_WORDS['incorrect']['incorrect_word'].index(current_word)
+        user_word = self.USER_LIST_WORDS['incorrect']['user_word'][idx]
+        result = self.USER_LIST_WORDS['incorrect']['correct_answer'][idx]
+
+        if self.is_red_test is True:
+            messagebox.showinfo(current_word, f"Вы ввели: {user_word}\nПравильный перевод: {result}")
+        else:
+            answer = messagebox.askquestion(title=f'{current_word}',
+                                            message=f"Вы ввели: {user_word}\nПравильный перевод: {result}"
+                                                    "\nДобавить слово в Красный список?")
+            if answer == 'yes':
+                add_word_in_db(word=current_word, translate=result)
+
+        self.window_mode.focus_set()
+
+    def create_table(self, column_name: str, current_list: list, selectmode: str = 'browse'):
+        style = ttk.Style()
+        style.configure("Treeview.Heading", font=("Helvetica", 12, "bold"))
+
+        tree = ttk.Treeview(self.window_mode, columns=column_name, show="headings", selectmode=selectmode, height=20)
+        tree.heading(column_name, text=column_name, anchor=tk.W)
+        tree.column("#1", stretch=False, width=350)
+
+        for word in current_list:
+            tree.insert("", END, values=word)
+        return tree
 
     def result_table(self):
         def toogle_table():
             self.is_visible_results.set(not self.is_visible_results.get())
             if self.is_visible_results.get():
                 hidden_btn.configure(text='Cкрыть результаты')
-                result_text_widget.pack()
+                correct_table.pack(side=tk.LEFT, padx=(90, 0))
+                incorrect_table.pack(side=tk.RIGHT, padx=(0, 90))
             else:
                 hidden_btn.configure(text='Показать результаты')
-                result_text_widget.pack_forget()
+                correct_table.pack_forget()
+                incorrect_table.pack_forget()
 
-        def show_notification(event):
-            index = result_text_widget.index(tk.CURRENT)
-            current_word = result_text_widget.get(index + " wordstart", index + " wordend")
-
-            idx = self.USER_LIST_WORDS['incorrect']['incorrect_word'].index(current_word)
-            user_word = self.USER_LIST_WORDS['incorrect']['user_word'][idx]
-            result = self.USER_LIST_WORDS['incorrect']['correct_answer'][idx]
-            if self.is_red_test is True:
-                messagebox.showinfo(current_word, f"Вы ввели: {user_word}\nПравильный перевод: {result}")
-            else:
-                answer = messagebox.askquestion(title='Добавить слово?',
-                                                message=f"Вы ввели: {user_word}\nПравильный перевод: {result}"
-                                                        "\nДобавить слово в Красный список?")
-                if answer == 'yes':
-                    add_words_to_lists(word=current_word, translate=result)
-                else:
-                    pass
-
-        self.window_mode.geometry('900x500')
+        self.window_mode.geometry('900x750+450+150')
         self.set_header(self.window_mode,
                         f'Правильных ответов: {len(self.USER_LIST_WORDS["correct"])} из {len(self.first_list)}')
 
-        result_text_widget = tk.Text(self.window_mode, height=10, width=80)
-        result_text_widget.tag_configure("color1", foreground="green")
-        result_text_widget.tag_configure("color2", foreground="red")
+        correct_list = self.USER_LIST_WORDS['correct']
+        incorrect_list = self.USER_LIST_WORDS['incorrect']['incorrect_word']
 
-        for word in self.first_list:
-            correct_ulw_word = word.capitalize()
-            if correct_ulw_word in self.USER_LIST_WORDS['correct']:
-                result_text_widget.insert(tk.END,
-                                          word + ' ',
-                                          'color1')
-            else:
-                result_text_widget.tag_bind('hover', '<Button-1>', show_notification)
-                result_text_widget.tag_configure('hover')
-                result_text_widget.insert(tk.END, word + ' ', ('color2', 'hover'))
+        correct_table = self.create_table(
+            column_name='Correct',
+            current_list=correct_list,
+            selectmode='none')
+
+        incorrect_table = self.create_table(
+            column_name='Incorrect',
+            current_list=incorrect_list)
+
+        incorrect_table.bind('<ButtonRelease-1>', self.on_click)
+        incorrect_table.bind("<Enter>", incorrect_table.config(cursor="hand2"))
 
         hidden_btn = tk.Button(self.window_mode,
                                text='Показать результаты',
                                width=25, height=2,
-                               command=toogle_table)
-
-        result_text_widget.configure(state=tk.DISABLED)
-
+                               command=toogle_table
+                               )
         exit_btn = tk.Button(self.window_mode, text='Выйти', width=25, height=2,
                              command=lambda: (
                                  self.clear_user_answers_list(),

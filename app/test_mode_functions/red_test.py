@@ -1,6 +1,5 @@
-from app.config import SIZE_TEST_MODE_MAIN_WINDOW
+from app.config import SIZE_TEST_MODE_MAIN_WINDOW, red_list_db
 from app.test_mode_functions.test_mode.test_mode_cls import TestModeClass
-from app.other.json_functions import get_words
 
 
 class RedTestWordsMode:
@@ -18,7 +17,7 @@ class RedTestWordsMode:
                                   is_red_test=True)
 
     def cache_loader(self):
-        words = get_words()
+        words = red_list_db.all()
         for w in words:
             self.FIRST_LIST_WORDS.append(w['word'])
             self.SECOND_LIST_WORDS.append(w['translate'])

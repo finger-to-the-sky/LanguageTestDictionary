@@ -33,19 +33,20 @@ class FileLoaderClass(ListBoxAdderClass):
                          lambda: self.confirm_cancel(win,
                                                      message='Вы уверены, что хотите прервать загрузку слов?')),
 
-            self.cache_listbox = tk.Listbox(win, width=100, selectmode=tk.SINGLE)
-            self.cache_listbox.pack(pady=(50, 10))
-
             download_button = tk.Button(win, text='Загрузить', command=lambda: (self.download_from_cache(),
                                                                                 win.destroy(),
-                                                                                self.window_is_active.set(False)))
-            download_button.pack(pady=15)
-
+                                                                                self.window_is_active.set(False),
+                                                                                self.window.focus_set()))
             clear_button = tk.Button(win, text='Очистить кэш', command=lambda: (clear_cache_filenames_db(),
                                                                                 self.cache_listbox.delete(0, tk.END),
                                                                                 self.window_is_active.set(False),
-                                                                                win.destroy()))
+                                                                                win.destroy(),
+                                                                                self.window.focus_set()))
+            self.cache_listbox = tk.Listbox(win, width=100, selectmode=tk.SINGLE)
+            self.cache_listbox.pack(pady=(50, 10))
+            download_button.pack(pady=15)
             clear_button.pack()
+
             files = cache_files_db.all()
             for data in files:
                 self.cache_listbox.insert(tk.END, data['filepath'])

@@ -136,6 +136,7 @@ class FileLoaderClass(ListBoxAdderClass):
                 messagebox.showerror(title='Ошибка', message='Некорректно выбран файл')
 
             args[0].window_is_active.set(False)
+            args[0].window.focus_set()
             return result
         return wrapper
 

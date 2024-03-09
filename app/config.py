@@ -13,5 +13,8 @@ if 'dist' in current_directory:
     current_directory = current_directory.replace('\\dist', '')
 
 FILE_INSTRUCTION_PATH = f'{current_directory}\\app\\other\\instruction\\instruction.pdf'
-red_list_db = TinyDB('./app/other/db/red_list.json')
-cache_files_db = TinyDB('./app/other/db/cache_files.json')
+
+
+updated_path = current_directory.replace('\\', '/')
+red_list_db = TinyDB(f'{updated_path}/app/other/db/red_list.json')
+cache_files_db = TinyDB(f'{updated_path}/app/other/db/cache_files.json')

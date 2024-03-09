@@ -236,7 +236,7 @@ class TestModeClass:
 
         if user_word_id is not None:
             user_word = self.second_list[user_word_id].lower().strip()
-            checkword = self.first_list[user_word_id].lower().strip()
+            checkword = self.first_list[checkword_id].lower().strip()
 
             if checkword_id == user_word_id:
                 self.USER_LIST_WORDS['correct'].append(checkword)

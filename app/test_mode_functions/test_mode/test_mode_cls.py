@@ -1,5 +1,7 @@
 import random
 import tkinter as tk
+from copy import copy
+from pprint import pprint
 from tkinter import Label, Toplevel, messagebox, ttk, END
 
 from app.config import SIZE_TEST_MODE_WINDOW
@@ -51,7 +53,8 @@ class TestModeClass:
         self.clear_btn = tk.Button(self.frame, text='Очистить список',
                                    width=20, height=3,
                                    font=10, bg='#DC6060',
-                                   command=lambda: (self.words_worker.clear_lists(), self.clear_error()
+                                   command=lambda: (self.words_worker.clear_lists(),
+                                                    self.clear_error()
                                                     ))
         self.start_btn = tk.Button(self.frame, text='Начать',
                                    width=20, height=3,
@@ -104,8 +107,10 @@ class TestModeClass:
                       first_list=self.first_list, second_list=self.second_list)
 
     def create_question(self):
+        self.clear_user_answers_list()
         # Variables for working
-        words_list = self.words_worker.FIRST_LANGUAGE_LIST
+        words_list = copy(self.words_worker.FIRST_LANGUAGE_LIST)
+        random.shuffle(words_list)
         counter = 1
         len_wl = len(words_list)
 
@@ -151,7 +156,7 @@ class TestModeClass:
         self.window_mode.bind("<Escape>", lambda event: self.finish_mode())
 
         # Main loop for working function
-        for word in set(words_list):
+        for word in words_list:
             is_usually_question = random.choice([True, False])
             if len_wl <= 2:
                 is_usually_question = True
@@ -173,7 +178,7 @@ class TestModeClass:
                 try:
                     other_words = random.sample(self.second_list, 2)
 
-                    translated_for_word = self.second_list[words_list.index(word)]
+                    translated_for_word = self.second_list[self.words_worker.FIRST_LANGUAGE_LIST.index(word)]
                     if translated_for_word in other_words:
                         other_words[other_words.index(translated_for_word)] = random.choice(self.second_list)
                     answers_list = [
@@ -231,7 +236,7 @@ class TestModeClass:
         try:
             user_word_id = self.second_list.index(fixed_user_text)
         except ValueError as e:
-            print(e)
+            print(f'\n{e}\n')
             user_word_id = None
 
         if user_word_id is not None:
@@ -240,7 +245,7 @@ class TestModeClass:
 
             if checkword_id == user_word_id:
                 self.USER_LIST_WORDS['correct'].append(checkword)
-                print(f"Correct {self.USER_LIST_WORDS['correct']}\n")
+                pprint(f"Correct {self.USER_LIST_WORDS['correct']}")
                 return user_word
             else:
                 self.USER_LIST_WORDS['incorrect']['incorrect_word'].append(checkword)
@@ -248,14 +253,15 @@ class TestModeClass:
                 self.USER_LIST_WORDS['incorrect']['correct_answer'].append(
                     self.second_list[checkword_id]
                 )
-                print(f"Incorrect {self.USER_LIST_WORDS['incorrect']}")
+                pprint(f"Incorrect {self.USER_LIST_WORDS['incorrect']}")
         else:
             self.USER_LIST_WORDS['incorrect']['incorrect_word'].append(check_word)
             self.USER_LIST_WORDS['incorrect']['user_word'].append(user_text)
             self.USER_LIST_WORDS['incorrect']['correct_answer'].append(
                 self.second_list[checkword_id]
             )
-            print(f"Incorrect {self.USER_LIST_WORDS['incorrect']}")
+
+            pprint(f"Incorrect {self.USER_LIST_WORDS['incorrect']}")
 
     def on_click(self, event):
         item = event.widget.selection()[0]

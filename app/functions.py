@@ -34,6 +34,8 @@ def set_languages(root, button_frame, user_text, translated_text):
                                       command=lambda: text_worker.get_text_translator(user_textfield=user_text,
                                                                                       tr_textfield=translated_text)
                                       )
+            root.bind('<Return>', lambda event: text_worker.get_text_translator(user_textfield=user_text,
+                                                                                tr_textfield=translated_text))
             translate_button.pack(pady=15)
 
     combo_from = ttk.Combobox(button_frame, values=LANGUAGES_LIST, state='readonly')

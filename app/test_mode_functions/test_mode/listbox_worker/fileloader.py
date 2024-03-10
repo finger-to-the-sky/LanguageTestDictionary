@@ -87,11 +87,11 @@ class FileLoaderClass(ListBoxAdderClass):
                 break
             if excel is True:
                 try:
-                    first_word = word[0].replace('\n', '').strip()
+                    first_word = word[0].replace('\n', '').strip().replace(' , ', ',').replace(', ', ',')
                     if first_word in self.FIRST_LANGUAGE_LIST:
                         continue
 
-                    second_word = word[1].replace('\n', '').strip()
+                    second_word = word[1].replace('\n', '').strip().replace(' , ', ',').replace(', ', ',')
                     if self.is_red_test is True:
                         add_word_in_db(word=first_word, translate=second_word)
 
@@ -104,11 +104,11 @@ class FileLoaderClass(ListBoxAdderClass):
             else:
                 try:
                     dash = word.index('-')
-                    first_word = word[:dash].replace('\n', '').strip()
+                    first_word = word[:dash].replace('\n', '').strip().replace(' , ', ',').replace(', ', ',')
                     if first_word in self.FIRST_LANGUAGE_LIST:
                         continue
 
-                    second_word = word[dash + 1:].replace('\n', '').strip()
+                    second_word = word[dash + 1:].replace('\n', '').strip().replace(' , ', ',').replace(', ', ',')
                     if second_word[-1] == ';':
                         second_word = second_word[:-1]
 

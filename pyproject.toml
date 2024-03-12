@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "etd"
+version = "1.0"
+description = "English Test Dictionary"
+authors = ["Zagmakk"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+tinydb = "^4.8.0"
+keyboard = "^0.13.5"
+pyperclip = "^1.8.2"
+python-docx = "^1.1.0"
+pandas = "^2.2.1"
+googletrans = "4.0.0-rc1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

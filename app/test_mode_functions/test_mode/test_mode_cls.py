@@ -161,11 +161,10 @@ class TestModeClass:
                 is_usually_question = True
 
             counter_label.configure(text=f'{counter}/{len_wl}')
-            counter_label.pack(side=tk.LEFT, anchor=tk.N, padx=(15, 0), pady=15
-                               )
             question_label.configure(text=f'{word} -')
-            question_label.pack(side=tk.LEFT, anchor=tk.N, padx=(15, 0), pady=15
-                                )
+            counter_label.pack(side=tk.LEFT, anchor=tk.N, padx=(15, 0), pady=15)
+            question_label.pack(side=tk.LEFT, anchor=tk.N, padx=(15, 0), pady=15)
+
             # Settings for different questions
             if is_usually_question:
                 answer_entry.pack(side=tk.LEFT, anchor=tk.N, padx=(15, 0), pady=(20, 15)

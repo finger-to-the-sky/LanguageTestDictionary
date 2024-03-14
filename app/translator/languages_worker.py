@@ -27,8 +27,8 @@ class LanguagesWorker:
         self.combo_to.bind('<<ComboboxSelected>>', lambda event: (self.on_select(self, event), self.change_lang_voices()))
 
         self.speaker = CreateSpeakerForText(root)
-        self.voice_btn1 = self.speaker.create_btn(self.user_text_widget, current_lang=LANGUAGES[self.FROM_LANGUAGE])
-        self.voice_btn2 = self.speaker.create_btn(self.translated_text_widget, current_lang=LANGUAGES[self.TO_LANGUAGE])
+        self.voice_btn1 = self.speaker.create_btn(self.user_text_widget.get("1.0", tk.END), current_lang=LANGUAGES[self.FROM_LANGUAGE])
+        self.voice_btn2 = self.speaker.create_btn(self.translated_text_widget.get("1.0", tk.END), current_lang=LANGUAGES[self.TO_LANGUAGE])
 
         self.translate_btn = tk.Button(root, text='Перевести', width=20,
                                        command=lambda: self.TEXT_WORKER.get_text_translator(
@@ -55,7 +55,9 @@ class LanguagesWorker:
     def change_lang_voices(self):
         self.voice_btn1.destroy()
         self.voice_btn2.destroy()
-        self.voice_btn1 = self.speaker.create_btn(self.user_text_widget, current_lang=LANGUAGES[self.FROM_LANGUAGE])
-        self.voice_btn2 = self.speaker.create_btn(self.translated_text_widget, current_lang=LANGUAGES[self.TO_LANGUAGE])
+        self.voice_btn1 = self.speaker.create_btn(self.user_text_widget.get("1.0", tk.END),
+                                                  current_lang=LANGUAGES[self.FROM_LANGUAGE])
+        self.voice_btn2 = self.speaker.create_btn(self.translated_text_widget.get("1.0", tk.END),
+                                                  current_lang=LANGUAGES[self.TO_LANGUAGE])
         self.voice_btn1.place(x=845, y=120)
         self.voice_btn2.place(x=885, y=300)

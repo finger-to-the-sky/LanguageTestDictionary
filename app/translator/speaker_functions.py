@@ -1,11 +1,13 @@
 import threading
 import time
-
 import gtts
-import pygame
+from os import environ
 import tkinter as tk
 from gtts import gTTS
 from app.config import LANGUAGES
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+import pygame
+
 
 
 class CreateSpeakerForText:
@@ -18,13 +20,13 @@ class CreateSpeakerForText:
         self.root = root
         self.speaker_image = tk.PhotoImage(file=self.IMAGEPATH)
 
-    def create_btn(self, text_widget, image=None, current_lang: str = 'English'):
+    def create_btn(self, text, image=None, current_lang: str = 'English'):
         if image is None:
             image = self.speaker_image
         btn = tk.Button(self.root, image=image, background='white', borderwidth=0,
                         command=lambda: threading.Thread(target=self.play_audio,
                                                          kwargs={
-                                                             'text': text_widget.get("1.0", tk.END),
+                                                             'text': text,
                                                              'current_language': current_lang}
                                                          ).start())
         return btn

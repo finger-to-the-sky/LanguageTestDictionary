@@ -16,6 +16,7 @@ class ListBoxAdderClass:
         self.error_add_win.set(False)
         self.error = tk.BooleanVar()
         self.error.set(False)
+        self.err = tk.Label()
 
         self.window_is_active = tk.BooleanVar()
         self.window_is_active.set(False)
@@ -60,7 +61,8 @@ class ListBoxAdderClass:
         if self.error.get() is False:
             try:
                 self.err.destroy()
-            except Exception:
+            except tk.TclError as e:
+                print(e, self.clear_error)
                 pass
 
     @staticmethod

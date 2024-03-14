@@ -10,6 +10,6 @@ class OneHundredMode:
 
     def __init__(self, root):
         self.root = root
-        test_mode = TestModeClass(root=self.root, title=self.TITLE,
-                                  size_window=self._SIZE_WINDOW,
-                                  first_list=self.FIRST_LIST_WORDS, second_list=self.SECOND_LIST_WORDS)
+        TestModeClass(root=self.root, title=self.TITLE,
+                      size_window=self._SIZE_WINDOW,
+                      first_list=self.FIRST_LIST_WORDS, second_list=self.SECOND_LIST_WORDS)

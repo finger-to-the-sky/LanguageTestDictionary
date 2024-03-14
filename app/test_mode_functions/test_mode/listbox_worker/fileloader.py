@@ -118,8 +118,8 @@ class FileLoaderClass(ListBoxAdderClass):
                     self.FIRST_LANGUAGE_LIST.append(first_word)
                     self.SECOND_LANGUAGE_LIST.append(second_word)
                     cache_words_list.append({'word': first_word, 'translate': second_word})
-                except Exception:
-                    pass
+                except IndexError as e:
+                    print(e, self.packing_words)
 
         self.update_listbox()
         return cache_words_list

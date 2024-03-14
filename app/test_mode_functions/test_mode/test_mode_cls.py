@@ -2,10 +2,9 @@ import random
 import tkinter as tk
 from copy import copy
 from pprint import pprint
-from tkinter import Label, Toplevel, messagebox, ttk, END
-
+from tkinter import messagebox, ttk
 from app.config import SIZE_TEST_MODE_WINDOW
-from app.text_field_functionality import russian_add_hotkeys, create_context_menu
+from app.translator.text_field_functionality import TextFieldFunctionality
 from app.test_mode_functions.test_mode.listbox_worker.listbox_editor import ListBoxEditor
 from app.other.db.json_functions import add_word_in_db
 
@@ -35,7 +34,7 @@ class TestModeClass:
         self.main_win_error = tk.BooleanVar()
         self.main_win_error.set(False)
 
-        self.window = Toplevel(self.root)
+        self.window = tk.Toplevel(self.root)
         self.frame = tk.Frame(self.window)
         self.window.focus_set()
         self.window.title(self.title)
@@ -66,7 +65,7 @@ class TestModeClass:
 
     def set_error(self, text, window):
         self.error_text.set(text)
-        error_label = Label(window, textvariable=self.error_text, fg='red')
+        error_label = tk.Label(window, textvariable=self.error_text, fg='red')
         self.main_win_error.set(True)
         return error_label
 
@@ -80,7 +79,7 @@ class TestModeClass:
 
     @staticmethod
     def set_header(window, label_text):
-        label = Label(window, text=label_text, font=('Helvetica', 20))
+        label = tk.Label(window, text=label_text, font=('Helvetica', 20))
         label.pack()
         return label
 
@@ -93,7 +92,7 @@ class TestModeClass:
             self.clear_error()
             self.window.destroy()
 
-            self.window_mode = Toplevel(self.root)
+            self.window_mode = tk.Toplevel(self.root)
             self.window_mode.title(self.title)
             self.window_mode.geometry(SIZE_TEST_MODE_WINDOW)
 
@@ -115,14 +114,14 @@ class TestModeClass:
         len_wl = len(words_list)
 
         # Labels
-        counter_label = Label(self.window_mode, text=len_wl)
-        question_label = Label(self.window_mode, font=15)
+        counter_label = tk.Label(self.window_mode, text=len_wl)
+        question_label = tk.Label(self.window_mode, font=15)
 
         # Entry widget for answering with needed instruments
         answer_entry = tk.Entry(self.window_mode, width=30)
         answer_entry.focus_set()
-        russian_add_hotkeys(root=self.window_mode, text_widgets=[answer_entry])
-        create_context_menu(root=self.window_mode, text_widgets=[answer_entry])
+        TextFieldFunctionality.russian_add_hotkeys(root=self.window_mode, text_widgets=[answer_entry])
+        TextFieldFunctionality.create_context_menu(root=self.window_mode, text_widgets=[answer_entry])
 
         # Radiobutton for not other mode questions
         selected_radio = tk.IntVar()
@@ -232,7 +231,6 @@ class TestModeClass:
         self.button_clicked.set(True)
         checkword_id = self.first_list.index(check_word)
         fixed_user_text = user_text.strip().replace(', ', ',').replace(' , ', ',')
-        user_word_id = None
         try:
             user_word_id = self.second_list.index(fixed_user_text)
         except ValueError as e:
@@ -291,7 +289,7 @@ class TestModeClass:
         tree.column("#1", stretch=False, width=350)
 
         for word in current_list:
-            tree.insert("", END, values=word)
+            tree.insert("", tk.END, values=word)
         return tree
 
     def result_table(self):

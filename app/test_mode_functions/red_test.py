@@ -11,10 +11,10 @@ class RedTestWordsMode:
     def __init__(self, root):
         self.root = root
         self.cache_loader()
-        test_mode = TestModeClass(root=self.root, title=self.TITLE,
-                                  size_window=self._SIZE_WINDOW,
-                                  first_list=self.FIRST_LIST_WORDS, second_list=self.SECOND_LIST_WORDS,
-                                  is_red_test=True)
+        TestModeClass(root=self.root, title=self.TITLE,
+                      size_window=self._SIZE_WINDOW,
+                      first_list=self.FIRST_LIST_WORDS, second_list=self.SECOND_LIST_WORDS,
+                      is_red_test=True)
 
     def cache_loader(self):
         words = red_list_db.all()

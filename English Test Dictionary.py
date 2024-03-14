@@ -1,7 +1,8 @@
-import tkinter
+import tkinter as tk
 from tkinter import Tk, Frame, Label, Text, Button
-from app.functions import set_languages, test_mode_activate
-from app.text_field_functionality import russian_add_hotkeys, create_context_menu
+from app.test_mode_functions.activation import test_mode_activate
+from app.translator.languages_worker import LanguagesWorker
+from app.translator.text_field_functionality import TextFieldFunctionality
 from app.config import TITLE, SIZE_WINDOW
 from app.other.instruction.instructions import set_instruction_field
 
@@ -29,19 +30,19 @@ test_mode_button.grid(row=0, column=4, padx=20)
 user_text_widget = Text(root, width=100, height=10)
 translated_text_widget = Text(root, width=100, height=10)
 
-# Function for creating the necessary components for translation
-set_languages(root=root, button_frame=frame, user_text=user_text_widget, translated_text=translated_text_widget)
-
-# Text Fields
 user_text_widget.pack(pady=(15, 0))
 translated_text_widget.pack(pady=(15, 15))
 
+lw = LanguagesWorker(root=root, user_text_widget=user_text_widget,
+                     translated_text_widget=translated_text_widget, frame=frame)
+
+
 # Hotkeys for russian keyboard
-russian_add_hotkeys(root=root, text_widgets=(user_text_widget, translated_text_widget))
+TextFieldFunctionality.russian_add_hotkeys(root=root, text_widgets=(user_text_widget, translated_text_widget))
 
 # Create context menu for right mouse button
-create_context_menu(root=root, text_widgets=(user_text_widget, translated_text_widget))
+TextFieldFunctionality.create_context_menu(root=root, text_widgets=(user_text_widget, translated_text_widget))
 
-set_instruction_field(root, text='Инструкция по работе с English Test Dictionary', side=tkinter.BOTTOM, pady=30)
+set_instruction_field(root, text='Инструкция по работе с English Test Dictionary', side=tk.BOTTOM, pady=30)
 
 root.mainloop()

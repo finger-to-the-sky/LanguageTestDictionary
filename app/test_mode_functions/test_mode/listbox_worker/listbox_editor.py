@@ -16,9 +16,7 @@ class ListBoxEditor(FileLoaderClass):
         self.second_words_list_widget.bind('<<ListboxSelect>>', self.edit_selected_word)
 
     def create_edit_window(self, new_window, current_listbox,
-                           label_text: str = None,
-                           words_list: list = None,
-                           is_second=False):
+                           label_text: str = None):
         self.label_for_edit_win = Label(new_window, text=label_text)
         self.label_for_edit_win.grid(column=0, row=0, sticky="nw", padx=10, pady=(15, 0))
 
@@ -52,7 +50,7 @@ class ListBoxEditor(FileLoaderClass):
                                                     message='Вы уверены, что хотите прервать редактирование слова?'))
 
             if selected_index:
-                self.create_edit_window(new_window=nw, words_list=self.FIRST_LANGUAGE_LIST,
+                self.create_edit_window(new_window=nw,
                                         label_text='Введите слово',
                                         current_listbox=event.widget)
 

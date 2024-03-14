@@ -1,5 +1,5 @@
 from app.config import SIZE_TEST_MODE_CHOOSE_WINDOW
-from tkinter import Label, Toplevel, messagebox
+from tkinter import messagebox
 
 
 class SentencesTest:
@@ -8,7 +8,7 @@ class SentencesTest:
 
     def __init__(self, root):
         messagebox.showinfo(message='Данный режим находится на стадии разработки')
+        self.root = root
         # self.window = Toplevel(root)
         # self.window.title(self.TITLE)
         # self.window.geometry(self._SIZE_WINDOW)
-

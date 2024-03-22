@@ -90,3 +90,6 @@ class TextWorker:
         except (httpcore.ConnectTimeout, httpcore.ConnectError) as e:
             print(e)
             print('Проблемы с подключением к интернету. Проверьте ваше соединение')
+        except IndexError as e:
+            print(e, self.get_text_translator)
+            print('Попытка перевода пустых полей')

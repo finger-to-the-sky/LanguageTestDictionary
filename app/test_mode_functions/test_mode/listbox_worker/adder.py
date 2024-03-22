@@ -1,5 +1,7 @@
 from tkinter import Label, messagebox
 import tkinter as tk
+
+from app.fonts import FontManager
 from app.other.db.json_functions import add_word_in_db, clear_cache_redlist
 
 
@@ -18,17 +20,26 @@ class ListBoxAdderClass:
         self.error.set(False)
         self.err = tk.Label()
 
+        # fonts configuration
+        self.fonts = FontManager()
+        self.label_fonts = self.fonts.LABEL_FONTS
+        self.button_fonts = self.fonts.BUTTON_FONTS
+        self.listbox_fonts = self.fonts.LISTBOX_FONTS
+        self.text_fonts = self.fonts.TEXT_FONTS
+
         self.window_is_active = tk.BooleanVar()
         self.window_is_active.set(False)
 
-        self.first_label = Label(self.window, text='Тестируемые слова', font=('Helvetica', 10))
-        self.second_label = Label(self.window, text='Перевод тестируемых слов', font=('Helvetica', 10))
+        self.first_label = Label(self.window, text='Тестируемые слова', font=self.label_fonts['ListboxNames'])
+        self.second_label = Label(self.window, text='Перевод тестируемых слов', font=self.label_fonts['ListboxNames'])
 
         self.first_label.grid(column=0, row=0)
         self.second_label.grid(column=1, row=0)
 
-        self.first_words_list_widget = tk.Listbox(self.window, selectmode=tk.SINGLE, width=50, height=30)
-        self.second_words_list_widget = tk.Listbox(self.window, selectmode=tk.SINGLE, width=50, height=30)
+        self.first_words_list_widget = tk.Listbox(self.window, selectmode=tk.SINGLE, width=50, height=30,
+                                                  font=self.listbox_fonts['WordsList'])
+        self.second_words_list_widget = tk.Listbox(self.window, selectmode=tk.SINGLE, width=50, height=30,
+                                                   font=self.listbox_fonts['WordsList'])
 
         self.first_words_list_widget.bind('<Enter>', self.first_words_list_widget.config(cursor='hand2'))
         self.second_words_list_widget.bind('<Enter>', self.second_words_list_widget.config(cursor='hand2'))
@@ -39,6 +50,7 @@ class ListBoxAdderClass:
         self.frame = tk.Frame(self.window)
         self.frame.grid(column=2, row=1, pady=(0, 180), padx=(30, 0))
         self.add_word_btn = tk.Button(self.frame, text='Добавить слова', width=20, height=2,
+                                      font=self.button_fonts['TestModeMenu']['WordsOperations']['Add_btn'],
                                       command=self.add_word_to_listwords)
         self.add_word_btn.pack(pady=(0, 10))
 
@@ -52,7 +64,7 @@ class ListBoxAdderClass:
 
     def set_error(self, text, window, error_status):
         self.text_var.set(text)
-        error_label = Label(window, textvariable=self.text_var, fg='red')
+        error_label = Label(window, textvariable=self.text_var, fg='red', font=self.label_fonts['Errors'])
         error_status.set(True)
         return error_label
 
@@ -133,14 +145,15 @@ class ListBoxAdderClass:
                           words_list: list = None,
                           is_second=False):
 
-        label_for_adding_win = Label(new_window, text=label_text)
+        label_for_adding_win = Label(new_window, text=label_text, font=self.label_fonts['WordsOperation'])
         label_for_adding_win.grid(column=0, row=0, sticky="nw", padx=10, pady=(15, 0))
 
-        added_word = tk.Entry(new_window, width=30)
+        added_word = tk.Entry(new_window, width=30, font=self.text_fonts['EntryWidget'])
         added_word.focus_set()
         added_word.grid(column=0, row=1, padx=10, pady=10)
 
         add_button = tk.Button(new_window, text='Добавить',
+                               font=self.button_fonts['TestModeMenu']['WordsOperations']['Add_btn'],
                                command=lambda: self.add_word_to_list(current_window=new_window, word_widget=added_word,
                                                                      current_list=words_list))
         new_window.bind('<Return>',
@@ -155,7 +168,7 @@ class ListBoxAdderClass:
                                                        current_list=words_list), self.create_add_window(
                     new_window=self.create_new_window(
                         self.window,
-                        geometry='300x120+800+400',
+                        geometry='400x120+800+400',
                         title='Добавление перевода'),
                     label_text='Добавьте перевод',
                     words_list=self.SECOND_LANGUAGE_LIST,
@@ -166,7 +179,7 @@ class ListBoxAdderClass:
                                                                  current_list=words_list), self.create_add_window(
                                 new_window=self.create_new_window(
                                     self.window,
-                                    geometry='300x120+800+400',
+                                    geometry='400x120+800+400',
                                     title='Добавление перевода'),
                                 label_text='Добавьте перевод',
                                 words_list=self.SECOND_LANGUAGE_LIST,
@@ -183,7 +196,7 @@ class ListBoxAdderClass:
                 self.err.grid(column=0, row=4)
 
             win = self.create_new_window(self.window,
-                                         geometry='300x120+800+400',
+                                         geometry='400x120+800+400',
                                          title='Добавление тестируемого слова')
 
             self.create_add_window(win, label_text='Добавьте слово',

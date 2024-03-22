@@ -17,12 +17,14 @@ class ListBoxEditor(FileLoaderClass):
 
     def create_edit_window(self, new_window, current_listbox,
                            label_text: str = None):
-        self.label_for_edit_win = Label(new_window, text=label_text)
+        self.label_for_edit_win = Label(new_window, text=label_text, font=self.label_fonts['WordsOperation'])
         self.label_for_edit_win.grid(column=0, row=0, sticky="nw", padx=10, pady=(15, 0))
 
-        self.edit_entry = tk.Entry(new_window, width=30)
-        self.confirm_button = tk.Button(new_window, text="Редактировать")
-        self.delete_word_button = tk.Button(new_window, text="Удалить")
+        self.edit_entry = tk.Entry(new_window, width=30, font=('Helvetica', 10))
+        self.confirm_button = tk.Button(new_window, text="Редактировать",
+                                        font=self.button_fonts['TestModeMenu']['WordsOperations']['Edit_btn'])
+        self.delete_word_button = tk.Button(new_window, text="Удалить",
+                                            font=self.button_fonts['TestModeMenu']['WordsOperations']['Delete_btn'])
 
         if current_listbox:
             self.confirm_button.configure(
@@ -42,7 +44,7 @@ class ListBoxEditor(FileLoaderClass):
 
         if self.window_is_active.get() is False:
             selected_index = event.widget.curselection()
-            nw = self.create_new_window(root=self.window, geometry='400x120+800+400',
+            nw = self.create_new_window(root=self.window, geometry='460x120+800+400',
                                         title='Редактирование тестируемого слова')
 
             nw.protocol('WM_DELETE_WINDOW',

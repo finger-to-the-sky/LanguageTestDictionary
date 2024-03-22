@@ -1,6 +1,7 @@
 from tkinter import Toplevel, Label
 from app.config import SIZE_TEST_MODE_CHOOSE_WINDOW
 from tkinter.ttk import Style, Button
+from app.fonts import FontManager
 
 
 class TestModeChooseClass:
@@ -13,7 +14,8 @@ class TestModeChooseClass:
         self.window.title(self.TITLE)
         self.window.geometry(self._SIZE_WINDOW)
 
-        self.label = Label(self.window, text='Выберите режим', font=('Helvetica', 20))
+        self.label_font = FontManager().LABEL_FONTS
+        self.label = Label(self.window, text='Выберите режим', font=self.label_font['Header'])
         self.label.pack(pady=15)
 
     def create_test_mode_button(self, text_button: str, cls_worker=None, func: tuple = None,
@@ -23,7 +25,7 @@ class TestModeChooseClass:
         default_button_style = Style()
         default_button_style.configure(style='TestButton.TButton',
                                        padding=(10, 5, 10, 5),
-                                       font=('Helvetica', 20),
+                                       font=self.label_font['Header'],
                                        background='#d3d3d3',
                                        wraplength=220
                                        )

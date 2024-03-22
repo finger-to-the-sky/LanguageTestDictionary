@@ -18,8 +18,10 @@ class FileLoaderClass(ListBoxAdderClass):
         super().__init__(master=master, is_red_test=is_red_test)
 
         self.upload_button = tk.Button(self.frame, text='Загрузить слова из файла',
+                                       font=self.button_fonts['TestModeMenu']['Download_btn'],
                                        height=2, width=30, command=self.download_words_from_file)
         self.cache_button = tk.Button(self.frame, text='История файлов',
+                                      font=self.button_fonts['TestModeMenu']['Cache_btn'],
                                       height=2, width=30, command=self.create_cache_window)
         self.upload_button.pack(pady=(0, 10))
         self.cache_button.pack(pady=(0, 10))
@@ -28,21 +30,26 @@ class FileLoaderClass(ListBoxAdderClass):
     def create_cache_window(self):
         if self.window_is_active.get() is False:
             self.window_is_active.set(True)
-            win = self.create_new_window(self.window, geometry='700x500')
+            win = self.create_new_window(self.window, geometry='800x500')
             win.protocol('WM_DELETE_WINDOW',
                          lambda: self.confirm_cancel(win,
                                                      message='Вы уверены, что хотите прервать загрузку слов?')),
 
-            download_button = tk.Button(win, text='Загрузить', command=lambda: (self.download_from_cache(),
-                                                                                win.destroy(),
-                                                                                self.window_is_active.set(False),
-                                                                                self.window.focus_set()))
-            clear_button = tk.Button(win, text='Очистить кэш', command=lambda: (clear_cache_filenames_db(),
-                                                                                self.cache_listbox.delete(0, tk.END),
-                                                                                self.window_is_active.set(False),
-                                                                                win.destroy(),
-                                                                                self.window.focus_set()))
-            self.cache_listbox = tk.Listbox(win, width=100, selectmode=tk.SINGLE)
+            download_button = tk.Button(win, text='Загрузить',
+                                        font=self.button_fonts['CacheWindowButtons']['DownloadCache_btn'],
+                                        command=lambda: (self.download_from_cache(),
+                                                         win.destroy(),
+                                                         self.window_is_active.set(False),
+                                                         self.window.focus_set()))
+            clear_button = tk.Button(win, text='Очистить кэш',
+                                     font=self.button_fonts['CacheWindowButtons']['ClearCache_btn'],
+                                     command=lambda: (clear_cache_filenames_db(),
+                                                      self.cache_listbox.delete(0, tk.END),
+                                                      self.window_is_active.set(False),
+                                                      win.destroy(),
+                                                      self.window.focus_set()))
+            self.cache_listbox = tk.Listbox(win, width=80, selectmode=tk.SINGLE,
+                                            font=self.listbox_fonts['CachingWindow'])
             self.cache_listbox.pack(pady=(50, 10))
             download_button.pack(pady=15)
             clear_button.pack()

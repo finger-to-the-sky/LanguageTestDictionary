@@ -19,17 +19,21 @@ def edit_word_in_db(current_word: str, word: str):
 
 def delete_word_in_db(deleted_word):
     cache = Query()
-    red_list_db.delete(cache.word == deleted_word) or \
-    red_list_db.delete(cache.translate == deleted_word)
+    red_list_db.remove(cache.word == deleted_word) or \
+    red_list_db.remove(cache.translate == deleted_word)
 
 
 def cache_current_file(filepath=None, words_list=None):
+    caching_files = cache_files_db.all()
     if filepath is None:
         return
     if words_list is None:
         words_list = []
+    if filepath in caching_files:
+        return False
     if len(cache_files_db.all()) >= 10:
-        return
+        fp = Query()
+        cache_files_db.remove(fp.filepath == caching_files[0]['filepath'])
     cache_files_db.insert({'filepath': filepath, 'words': words_list})
 
 

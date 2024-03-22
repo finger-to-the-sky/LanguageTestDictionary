@@ -9,7 +9,6 @@ environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 
 
-
 class CreateSpeakerForText:
     FILES_DIRECTORY = './app/other/audio/'
     DEFAULT_FILE = 'text.mp3'
@@ -20,15 +19,16 @@ class CreateSpeakerForText:
         self.root = root
         self.speaker_image = tk.PhotoImage(file=self.IMAGEPATH)
 
-    def create_btn(self, text, image=None, current_lang: str = 'English'):
+    def create_btn(self, text_widget, image=None, current_lang: str = 'English'):
         if image is None:
             image = self.speaker_image
-        btn = tk.Button(self.root, image=image, background='white', borderwidth=0,
+        btn = tk.Button(self.root, image=image, borderwidth=0,
                         command=lambda: threading.Thread(target=self.play_audio,
                                                          kwargs={
-                                                             'text': text,
+                                                             'text': text_widget.get("1.0", tk.END),
                                                              'current_language': current_lang}
                                                          ).start())
+        btn.bind("<Enter>", btn.config(cursor="hand2"))
         return btn
 
     def create_audiofile(self, text: str, lang: str, filepath: str = None):
@@ -41,6 +41,10 @@ class CreateSpeakerForText:
             else:
                 tts.save(self.FILEPATH)
             return filepath
+
+        except AssertionError as e:
+            print(e, self.create_audiofile)
+            print('Отстуствует текст для озвучивания')
 
         except gtts.gTTSError as e:
             print(e, self.create_audiofile)

@@ -3,13 +3,15 @@ from tkinter import Tk, Frame, Label, Text, Button
 from app.test_mode_functions.test_mode.activation import test_mode_activate
 from app.translator.languages_worker import LanguagesWorker
 from app.translator.text_field_functionality import TextFieldFunctionality
-from app.config import TITLE, SIZE_WINDOW
+from app.config import TITLE, SIZE_WINDOW, main_logger
 from app.other.instruction.instructions import set_instruction_field
 from app.fonts import FontManager
+
 
 root = Tk()
 root.title(TITLE)
 root.geometry(SIZE_WINDOW)
+main_logger.info('Приложение запущено')
 
 font_manager = FontManager()
 label_font = font_manager.LABEL_FONTS
@@ -50,5 +52,4 @@ TextFieldFunctionality.russian_add_hotkeys(root=root, text_widgets=(user_text_wi
 TextFieldFunctionality.create_context_menu(root=root, text_widgets=(user_text_widget, translated_text_widget))
 
 set_instruction_field(root, text='Инструкция по работе с English Test Dictionary', side=tk.BOTTOM, pady=30)
-
 root.mainloop()

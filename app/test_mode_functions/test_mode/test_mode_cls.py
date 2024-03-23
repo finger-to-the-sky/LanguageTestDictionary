@@ -127,10 +127,10 @@ class TestModeClass:
 
         # Labels
         counter_label = tk.Label(self.window_mode, text=len_wl, font=self.label_fonts['Counter'])
-        question_label = tk.Label(self.window_mode, font=self.label_fonts['TestModeWord'])
+        question_label = tk.Label(self.window_mode, font=self.label_fonts['TestModeWord'], wraplength=150)
 
         # Entry widget for answering with needed instruments
-        answer_entry = tk.Entry(self.window_mode, width=30, font=self.text_fonts['EntryWidget'])
+        answer_entry = tk.Entry(self.window_mode, width=20, font=self.text_fonts['EntryWidget'])
         answer_entry.focus_set()
         TextFieldFunctionality.russian_add_hotkeys(root=self.window_mode, text_widgets=[answer_entry])
         TextFieldFunctionality.create_context_menu(root=self.window_mode, text_widgets=[answer_entry])

@@ -1,3 +1,7 @@
+import inspect
+from app.config import main_logger
+
+
 class FontManager:
     MAIN_FONT = 'Georgia'
 
@@ -38,7 +42,7 @@ class FontManager:
                 'ShowTable_btn': (MAIN_FONT, 12),
                 'Restart_btn': (MAIN_FONT, 12),
                 'Exit_btn': (MAIN_FONT, 12),
-                }
+            }
         },
         'CacheWindowButtons': {
             'ClearCache_btn': (MAIN_FONT, 10),
@@ -60,6 +64,11 @@ class FontManager:
     }
 
     def __init__(self, font: str = None):
+        caller_frame = inspect.currentframe().f_back
+        caller_module = inspect.getmodule(caller_frame)
+        if '/' in caller_module.__file__:
+            filepath = caller_module.__file__.split('/')
+        else:
+            filepath = caller_module.__file__.split('\\')
         self.font = font
-
-    
+        main_logger.info(f'Была произведена инициализация шрифтов в модуле: {filepath[-1]}')

@@ -5,6 +5,10 @@ from os import environ
 import tkinter as tk
 from gtts import gTTS
 from app.config import LANGUAGES
+from app.config import main_logger, exceptions_logger
+from app.fonts import FontManager
+from app.other.custom_print import colored_print
+
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 
@@ -18,6 +22,16 @@ class CreateSpeakerForText:
     def __init__(self, root):
         self.root = root
         self.speaker_image = tk.PhotoImage(file=self.IMAGEPATH)
+        self.font = FontManager()
+        self.error = False
+        self.error_label = tk.Label(self.root, fg='red', font=self.font.LABEL_FONTS['Errors'])
+        main_logger.info(f'Класс синтезатора был проинициализирован в {self.root.title()}')
+
+    def set_error_for_exceptions(self, text):
+        if self.error is False:
+            self.error = True
+            self.error_label.configure(text=text)
+            self.error_label.pack(pady=10)
 
     def create_btn(self, text_widget, image=None, current_lang: str = 'English'):
         if image is None:
@@ -33,26 +47,33 @@ class CreateSpeakerForText:
 
     def create_audiofile(self, text: str, lang: str, filepath: str = None):
         if lang not in LANGUAGES.values():
-            raise ValueError(f'{lang} - нет в списке языков play_audio()')
+            colored_print(message=f'{lang} - нет в списке языков для play_audio()', color='red', style='bright')
         try:
             tts = gTTS(text=text, lang=lang, slow=False)
             if filepath is not None:
                 tts.save(filepath)
             else:
                 tts.save(self.FILEPATH)
+
+            self.error = False
+            self.error_label.pack_forget()
             return filepath
+        except ValueError as e:
+            message = 'Неподдерживаемый формат файла'
+            exceptions_logger.error(f'{message} {self.create_audiofile}')
+            colored_print(f'{message} {self.create_audiofile}', color='red', style='bright')
 
         except AssertionError as e:
-            print(e, self.create_audiofile)
-            print('Отстуствует текст для озвучивания')
+            message = 'Отстуствует текст для озвучивания'
+            exceptions_logger.error(f'{message} {self.create_audiofile}')
+            self.set_error_for_exceptions(message)
 
         except gtts.gTTSError as e:
-            print(e, self.create_audiofile)
-            print('Проблемы с подключением к интернету. Проверьте ваше соединение')
+            message = 'Проблемы с подключением к интернету. Проверьте ваше соединение'
+            exceptions_logger.error(f'{message} {self.create_audiofile}')
+            self.set_error_for_exceptions(message)
 
         except PermissionError as e:
-            print(e, self.create_audiofile)
-
             file = self.create_audiofile(text=text, filepath=f'{self.FILES_DIRECTORY}text1.mp3',
                                          lang=lang)
             return file
@@ -76,9 +97,13 @@ class CreateSpeakerForText:
         except PermissionError:
             pass
         except (AssertionError, pygame.error) as e:
-            print(e, self.play_audio)
+            message = 'Нет файлового обьекта для синтезатора'
+            exceptions_logger.error(f'{message} {self.play_audio}')
+            colored_print(f'{message} {self.play_audio}', color='red', style='bright')
         except FileNotFoundError:
-            print('Аудиофайл был не найден')
+            message = 'Аудиофайл был не найден'
+            exceptions_logger.error(f'{message} {self.play_audio}')
+            colored_print(f'{message} {self.play_audio}', color='red', style='bright')
 
     @staticmethod
     def stop_speaker():

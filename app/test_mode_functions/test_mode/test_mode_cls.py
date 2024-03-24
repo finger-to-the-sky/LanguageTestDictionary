@@ -2,11 +2,12 @@ import random
 import tkinter as tk
 from copy import copy
 from tkinter import messagebox, ttk
-from app.config import SIZE_TEST_MODE_WINDOW
+from app.config import SIZE_TEST_MODE_WINDOW, main_logger, exceptions_logger
 from app.translator.text_field_functionality import TextFieldFunctionality
 from app.test_mode_functions.test_mode.listbox_worker.listbox_editor import ListBoxEditor
 from app.other.db.json_functions import add_word_in_db
 from app.fonts import FontManager
+from app.other.custom_print import colored_print
 
 
 class TestModeClass:
@@ -69,6 +70,7 @@ class TestModeClass:
                                    )
         self.clear_btn.grid(column=2, row=1, pady=(220, 0), padx=(20, 0))
         self.start_btn.grid(column=2, row=1, pady=(370, 0), padx=(20, 0))
+        main_logger.info(f'Инициализация класса {TestModeClass.__name__} прошла успешно.')
 
     def set_error(self, text, window):
         self.error_text.set(text)
@@ -82,7 +84,7 @@ class TestModeClass:
         try:
             self.error.destroy()
         except AttributeError:
-            pass
+            exceptions_logger.error(f'self.error = {self.error} был не найден')
 
     def set_header(self, window, label_text):
         label = tk.Label(window, text=label_text, font=self.label_fonts['Header'])
@@ -95,6 +97,7 @@ class TestModeClass:
         self.window_mode.geometry(SIZE_TEST_MODE_WINDOW)
         self.set_header(self.window_mode, self.title)
         self.window_mode.lift()
+        main_logger.info(f'Новое окно было создано {self.window_mode}')
 
     def start_mode(self):
         if not self.words_worker.FIRST_LANGUAGE_LIST:
@@ -111,6 +114,7 @@ class TestModeClass:
         self.window_mode.destroy()
         self.create_window_mode()
         self.result_table()
+        main_logger.info(f'Тестовый режим был завершен {self.finish_mode}.')
 
     def exit(self):
         self.window_mode.destroy()
@@ -138,24 +142,21 @@ class TestModeClass:
         # Radiobutton for not other mode questions
         selected_radio = tk.IntVar()
         selected_radio.set(-1)
-        radio_button1 = tk.Radiobutton(self.window_mode,
-                                       variable=selected_radio,
-                                       font=self.button_fonts['TestModeButtons']['RadioButtons'],
-                                       value=0,
-                                       command=lambda: selected_radio.get()
-                                       )
-        radio_button2 = tk.Radiobutton(self.window_mode,
-                                       variable=selected_radio,
-                                       font=self.button_fonts['TestModeButtons']['RadioButtons'],
-                                       value=1,
-                                       command=lambda: selected_radio.get()
-                                       )
-        radio_button3 = tk.Radiobutton(self.window_mode,
-                                       variable=selected_radio,
-                                       font=self.button_fonts['TestModeButtons']['RadioButtons'],
-                                       value=2,
-                                       command=lambda: selected_radio.get()
-                                       )
+        radio_button1 = tk.Radiobutton(
+            self.window_mode, variable=selected_radio,
+            font=self.button_fonts['TestModeButtons']['RadioButtons'], value=0,
+            command=lambda: selected_radio.get()
+        )
+        radio_button2 = tk.Radiobutton(
+            self.window_mode, variable=selected_radio,
+            font=self.button_fonts['TestModeButtons']['RadioButtons'], value=1,
+            command=lambda: selected_radio.get()
+        )
+        radio_button3 = tk.Radiobutton(
+            self.window_mode, variable=selected_radio,
+            font=self.button_fonts['TestModeButtons']['RadioButtons'], value=2,
+            command=lambda: selected_radio.get()
+        )
         # Buttons
         continue_btn = tk.Button(self.window_mode, text='Далее',
                                  font=self.button_fonts['TestModeButtons']['ContinueMode_btn'],
@@ -180,8 +181,8 @@ class TestModeClass:
 
             # Settings for different questions
             if is_usually_question:
-                answer_entry.pack(side=tk.LEFT, anchor=tk.N, padx=(15, 0), pady=(20, 15)
-                                  )
+                answer_entry.pack(side=tk.LEFT, anchor=tk.N, padx=(15, 0), pady=(20, 15))
+
                 continue_btn.configure(command=lambda: self.check_correct_answer(word, answer_entry.get()))
                 self.window_mode.bind('<Return>', lambda event: self.check_correct_answer(word, answer_entry.get()))
             else:
@@ -192,11 +193,7 @@ class TestModeClass:
                     translated_for_word = self.second_list[self.words_worker.FIRST_LANGUAGE_LIST.index(word)]
                     if translated_for_word in other_words:
                         other_words[other_words.index(translated_for_word)] = random.choice(self.second_list)
-                    answers_list = [
-                        other_words[0],
-                        translated_for_word,
-                        other_words[1]
-                    ]
+                    answers_list = [other_words[0], translated_for_word, other_words[1]]
                     random.shuffle(answers_list)
 
                     # Changing text in the Radiobuttons and pack them
@@ -209,18 +206,17 @@ class TestModeClass:
                     radio_button3.pack(anchor=tk.W, padx=(50, 0))
 
                     continue_btn.configure(command=lambda: self.check_correct_answer(
-                        word, answers_list[int(selected_radio.get())])
-                                           )
+                        word, answers_list[int(selected_radio.get())]))
                     self.window_mode.bind('<Return>', lambda event: self.check_correct_answer(
-                        word, answers_list[int(selected_radio.get())])
-                                          )
-                except ValueError as e:
-                    print(f'Error {e}')
+                        word, answers_list[int(selected_radio.get())]))
 
-            continue_btn.pack(side=tk.RIGHT, anchor=tk.S,
-                              padx=15, pady=15)
-            quit_btn.pack(side=tk.RIGHT, anchor=tk.S,
-                          pady=15)
+                except ValueError as e:
+                    message = f'Ошибка в рандомизации ответов {self.create_question.__name__}'
+                    exceptions_logger.error(message)
+                    colored_print(message, color='red', style='bright')
+
+            continue_btn.pack(side=tk.RIGHT, anchor=tk.S, padx=15, pady=15)
+            quit_btn.pack(side=tk.RIGHT, anchor=tk.S, pady=15)
             self.window_mode.wait_variable(self.button_clicked)
 
             # After click of button clear all elements and continue loop
@@ -243,10 +239,15 @@ class TestModeClass:
         self.button_clicked.set(True)
         checkword_id = self.first_list.index(check_word)
         fixed_user_text = user_text.strip().replace(', ', ',').replace(' , ', ',')
+        count_words = []
+
         try:
+            for idx, word in enumerate(self.second_list):
+                if self.second_list.count(self.second_list[idx]) >= 2:
+                    count_words.append(idx)
             user_word_id = self.second_list.index(fixed_user_text)
+
         except ValueError as e:
-            print(f'\n{e}\n')
             user_word_id = None
 
         if user_word_id is not None:
@@ -255,29 +256,31 @@ class TestModeClass:
 
             if checkword_id == user_word_id:
                 self.USER_LIST_WORDS['correct'].append(checkword)
-                print(f"Correct: {checkword}; Translate: {user_word}\n")
+                colored_print(message=f"Correct: {checkword}; Translate: {user_word}\n", color='green')
                 return user_word
+            elif checkword_id in count_words:
+                for word_id in count_words:
+                    if checkword_id == word_id:
+                        self.USER_LIST_WORDS['correct'].append(checkword)
+                        colored_print(message=f"Correct: {checkword}; Translate: {user_word}\n", color='green')
+                        return user_word
             else:
                 self.USER_LIST_WORDS['incorrect']['incorrect_word'].append(checkword)
                 self.USER_LIST_WORDS['incorrect']['user_word'].append(fixed_user_text)
-                self.USER_LIST_WORDS['incorrect']['correct_answer'].append(
-                    self.second_list[checkword_id]
-                )
-                print(
-                    f"Incorrect word: {check_word}\nUser word: {user_text}\n"
-                    f"Correct answer: {self.second_list[checkword_id]}\n")
+                self.USER_LIST_WORDS['incorrect']['correct_answer'].append(self.second_list[checkword_id])
+                colored_print(message=f"Incorrect word: {check_word}\nUser word: {user_text}\n"
+                                      f"Correct answer: {self.second_list[checkword_id]}\n")
         else:
             self.USER_LIST_WORDS['incorrect']['incorrect_word'].append(check_word)
             self.USER_LIST_WORDS['incorrect']['user_word'].append(user_text)
-            self.USER_LIST_WORDS['incorrect']['correct_answer'].append(
-                self.second_list[checkword_id]
-            )
+            self.USER_LIST_WORDS['incorrect']['correct_answer'].append(self.second_list[checkword_id])
 
-            print(
-                f"Incorrect word: {check_word}\nUser word: {user_text}\n"
-                f"Correct answer: {self.second_list[checkword_id]}\n")
+            print(f"Incorrect word: {check_word}\nUser word: {user_text}\n"
+                  f"Correct answer: {self.second_list[checkword_id]}\n")
 
-    def on_click(self, event):
+            main_logger.info('Слово успешно добавлено в список')
+
+    def answer_redlist(self, event):
         item = event.widget.selection()[0]
         current_word = event.widget.item(item)['values'][0]
 
@@ -287,13 +290,17 @@ class TestModeClass:
 
         if self.is_red_test is True:
             messagebox.showinfo(current_word, f"Вы ввели: {user_word}\nПравильный перевод: {result}")
+            main_logger.info('Запрос на добавление слова в Красный Список был произведен')
+
         else:
             answer = messagebox.askquestion(title=f'{current_word}',
                                             message=f"Вы ввели: {user_word}\nПравильный перевод: {result}"
                                                     "\nДобавить слово в Красный список?")
+
+            main_logger.info('Запрос на добавление слова в Красный Список был произведен')
             if answer == 'yes':
                 add_word_in_db(word=current_word, translate=result)
-
+                main_logger.info('Слово было добавлено в Красный Список')
         self.window_mode.focus_set()
 
     def create_table(self, column_name: str, current_list: list, selectmode: str = 'browse'):
@@ -309,6 +316,7 @@ class TestModeClass:
 
         for word in current_list:
             tree.insert("", tk.END, values=word, tags="Treeview.Cell")
+        main_logger.info(f'Таблица {column_name} была успешно создана.')
         return tree
 
     def result_table(self):
@@ -339,13 +347,11 @@ class TestModeClass:
             column_name='Incorrect',
             current_list=incorrect_list)
 
-        incorrect_table.bind('<ButtonRelease-1>', self.on_click)
+        incorrect_table.bind('<ButtonRelease-1>', self.answer_redlist)
         incorrect_table.bind("<Enter>", incorrect_table.config(cursor="hand2"))
 
-        hidden_btn = tk.Button(self.window_mode,
-                               text='Показать результаты',
+        hidden_btn = tk.Button(self.window_mode, text='Показать результаты', width=25, height=2,
                                font=self.button_fonts['TestModeButtons']['ResultButtons']['ShowTable_btn'],
-                               width=25, height=2,
                                command=toogle_table
                                )
         exit_btn = tk.Button(self.window_mode, text='Выйти', width=25, height=2,
@@ -364,9 +370,13 @@ class TestModeClass:
         restart_btn.pack(pady=10)
         exit_btn.pack()
         hidden_btn.pack(pady=15)
+        main_logger.info('Результирующие таблицы были успешно созданы и размещены')
 
     def clear_user_answers_list(self):
         self.USER_LIST_WORDS['correct'].clear()
         self.USER_LIST_WORDS['incorrect']['user_word'].clear()
         self.USER_LIST_WORDS['incorrect']['incorrect_word'].clear()
         self.USER_LIST_WORDS['incorrect']['correct_answer'].clear()
+        message = 'Списки ответов были успешно очищены'
+        main_logger.info(message)
+        colored_print(message, color='green')

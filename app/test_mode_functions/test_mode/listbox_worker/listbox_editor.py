@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import Label
+from app.config import main_logger, exceptions_logger
+from app.other.custom_print import colored_print
 from app.test_mode_functions.test_mode.listbox_worker.fileloader import FileLoaderClass
 from app.other.db.json_functions import edit_word_in_db, delete_word_in_db
 
@@ -14,6 +16,7 @@ class ListBoxEditor(FileLoaderClass):
         self.label_for_edit_win = None
         self.first_words_list_widget.bind('<<ListboxSelect>>', self.edit_selected_word)
         self.second_words_list_widget.bind('<<ListboxSelect>>', self.edit_selected_word)
+        main_logger.info(f'Класс: {ListBoxEditor.__name__} был успешно инициализирован.')
 
     def create_edit_window(self, new_window, current_listbox,
                            label_text: str = None):
@@ -32,11 +35,12 @@ class ListBoxEditor(FileLoaderClass):
             self.delete_word_button.configure(
                 command=lambda: (self.delete_word(current_widget=current_listbox), new_window.destroy()))
         else:
-            print('Undefined current listbox')
+            colored_print('Undefined current listbox', color='red', style='bright')
 
         self.edit_entry.grid(column=0, row=1, padx=10, pady=10)
         self.confirm_button.grid(row=2, column=1, sticky="se", padx=10, pady=(0, 15))
         self.delete_word_button.grid(row=2, column=2, sticky="se", padx=10, pady=(0, 15))
+        main_logger.info(f'Окно редактирования {new_window.title()} было успешно создано.')
 
     def edit_selected_word(self, event):
         if len(self.FIRST_LANGUAGE_LIST) == 0:
@@ -81,6 +85,9 @@ class ListBoxEditor(FileLoaderClass):
             current_list[selected_index[0]] = edited_word
             self.update_listbox()
         self.window_is_active.set(False)
+        message = f'Слово: {current_list[selected_index[0]]} было успешно отредактировано.'
+        main_logger.info(message)
+        colored_print(message, color='green')
 
     def delete_word(self, current_widget=None):
         selected_index = current_widget.curselection()
@@ -92,3 +99,7 @@ class ListBoxEditor(FileLoaderClass):
             self.SECOND_LANGUAGE_LIST.pop(selected_index[0])
             self.update_listbox()
         self.window_is_active.set(False)
+        message = (f'Слово: {self.FIRST_LANGUAGE_LIST[selected_index[0]]} и его перевод:'
+                   f' {self.SECOND_LANGUAGE_LIST[selected_index[0]]} было успешно удалены.')
+        main_logger.info(message)
+        colored_print(message, color='green')

@@ -1,8 +1,8 @@
 from tkinter import Label, messagebox
 import tkinter as tk
-
 from app.fonts import FontManager
 from app.other.db.json_functions import add_word_in_db, clear_cache_redlist
+from app.config import main_logger, exceptions_logger
 
 
 class ListBoxAdderClass:
@@ -53,6 +53,7 @@ class ListBoxAdderClass:
                                       font=self.button_fonts['TestModeMenu']['WordsOperations']['Add_btn'],
                                       command=self.add_word_to_listwords)
         self.add_word_btn.pack(pady=(0, 10))
+        main_logger.info(f'Класс {ListBoxAdderClass.__name__} был успешно инициализирован.')
 
     def check_len_list(self):
         if len(self.SECOND_LANGUAGE_LIST) >= 30 and self.is_red_test is True:
@@ -86,6 +87,7 @@ class ListBoxAdderClass:
                 return
             result = func(*args, **kwargs)
             return result
+
         return wrapper
 
     @check_err
@@ -97,6 +99,7 @@ class ListBoxAdderClass:
         new_window.protocol('WM_DELETE_WINDOW',
                             lambda: self.confirm_cancel(new_window,
                                                         message='Вы уверены, что хотите прервать добавление слова?'))
+        main_logger.info(f'Новое окно {title} было успешно создано')
         return new_window
 
     def confirm_cancel(self, window, title='Подтвердите операцию', message=None):
@@ -112,6 +115,7 @@ class ListBoxAdderClass:
                 self.FIRST_LANGUAGE_LIST.pop(-1)
                 self.update_listbox()
             window.destroy()
+        main_logger.info('Операция была отменена')
 
     def add_word_to_list(self, word_widget, current_list: list, current_window):
         word = word_widget.get().strip().replace(', ', ',').replace(' , ', ',')
@@ -138,6 +142,7 @@ class ListBoxAdderClass:
 
         if current_list is self.SECOND_LANGUAGE_LIST:
             self.window_is_active.set(False)
+        main_logger.info(f'Слово {word} было успешно добавлено.')
 
     @check_err
     def create_add_window(self, new_window,
@@ -185,6 +190,8 @@ class ListBoxAdderClass:
                                 words_list=self.SECOND_LANGUAGE_LIST,
                                 is_second=True)))
 
+        main_logger.info('Функция добавления слова была запущена.')
+
     @check_err
     def add_word_to_listwords(self):
         if self.window_is_active.get() is False:
@@ -212,7 +219,7 @@ class ListBoxAdderClass:
         for word in self.SECOND_LANGUAGE_LIST:
             self.second_words_list_widget.insert(tk.END, word)
 
-        print('ListBoxes has been updated')
+        main_logger.info('Listboxs были обновлены')
 
     def clear_lists(self):
         self.FIRST_LANGUAGE_LIST.clear()
@@ -222,3 +229,4 @@ class ListBoxAdderClass:
         self.clear_error()
         if self.is_red_test is True:
             clear_cache_redlist()
+        main_logger.info('Listboxs были очищены')

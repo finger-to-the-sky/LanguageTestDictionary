@@ -32,3 +32,5 @@ cache_files_db = TinyDB(f'{updated_path}/app/other/db/cache_files.json')
 
 main_logger = get_logger('main')
 exceptions_logger = get_logger('exceptions', filemode='a')
+red_list_logger = get_logger('red_list_db')
+cache_files_logger = get_logger('cache_files_db')

@@ -2,7 +2,8 @@ from tkinter import filedialog, messagebox
 from docx import Document
 from docx.opc.exceptions import PackageNotFoundError
 from pandas import read_excel
-from app.config import cache_files_db
+from app.config import cache_files_db, main_logger, exceptions_logger
+from app.other.custom_print import colored_print
 from app.other.instruction.instructions import set_instruction_field
 from app.other.db.json_functions import clear_cache_filenames_db, download_file_from_cache, add_word_in_db, \
     cache_current_file
@@ -26,6 +27,7 @@ class FileLoaderClass(ListBoxAdderClass):
         self.upload_button.pack(pady=(0, 10))
         self.cache_button.pack(pady=(0, 10))
         self.cache_listbox = None
+        main_logger.info(f'Класс {FileLoaderClass.__name__} был успешно инициализирован.')
 
     def create_cache_window(self):
         if self.window_is_active.get() is False:
@@ -57,6 +59,7 @@ class FileLoaderClass(ListBoxAdderClass):
             files = cache_files_db.all()
             for data in files:
                 self.cache_listbox.insert(tk.END, data['filepath'])
+            main_logger.info("Окно кэширования файлов было успешно создано")
 
     def download_from_cache(self):
         selected_index = self.cache_listbox.curselection()
@@ -67,8 +70,11 @@ class FileLoaderClass(ListBoxAdderClass):
                 self.FIRST_LANGUAGE_LIST.append(w['word'])
                 self.SECOND_LANGUAGE_LIST.append(w['translate'])
             self.update_listbox()
+            main_logger.info('Загрузка слов из кеширования прошла успешно')
         except IndexError:
-            pass
+            message = 'Ошибка выделенного обьекта. Пользователь не выделил обьект в Listbox'
+            colored_print(message, color='red', style='bright')
+            exceptions_logger.error(f'{message} {self.download_from_cache.__name__}')
 
     def download_words_from_file(self):
         if self.window_is_active.get() is False:
@@ -107,6 +113,8 @@ class FileLoaderClass(ListBoxAdderClass):
                     cache_words_list.append({'word': first_word, 'translate': second_word})
 
                 except IndexError:
+                    message = 'Не было обнаружено перевода'
+                    exceptions_logger.error(f'{message} {self.packing_words.__name__}')
                     continue
             else:
                 try:
@@ -129,6 +137,7 @@ class FileLoaderClass(ListBoxAdderClass):
                     pass
 
         self.update_listbox()
+        main_logger.info('Все слова из файла были успешно загружены.')
         return cache_words_list
 
     @staticmethod
@@ -141,9 +150,11 @@ class FileLoaderClass(ListBoxAdderClass):
                 result = func(*args, **kwargs)
             except (FileNotFoundError, PackageNotFoundError, UnicodeDecodeError):
                 messagebox.showerror(title='Ошибка', message='Некорректно выбран файл')
+                exceptions_logger.error(f'Некорректно выбран файл. enter_file')
 
             args[0].window_is_active.set(False)
             args[0].window.focus_set()
+
             return result
         return wrapper
 
@@ -167,6 +178,7 @@ class FileLoaderClass(ListBoxAdderClass):
         except ValueError:
             messagebox.showerror(title='Ошибка',
                                  message='Функция загрузки word поддерживает только форматы doc или docx')
+            exceptions_logger.error(f'Выбран неверный формат файла. {self.load_from_word.__name__}')
 
     @enter_file
     def load_from_excel(self, filepath=None):
@@ -177,3 +189,4 @@ class FileLoaderClass(ListBoxAdderClass):
         except ValueError:
             messagebox.showerror(title='Ошибка',
                                  message='Функция загрузки excel поддерживает только формат xlsx')
+            exceptions_logger.error(f'Выбран неверный формат файла. {self.load_from_excel.__name__}')

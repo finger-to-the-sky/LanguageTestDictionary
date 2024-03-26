@@ -8,6 +8,7 @@ from app.config import LANGUAGES
 from app.config import main_logger, exceptions_logger
 from app.fonts import FontManager
 from app.other.custom_print import colored_print
+from app.tk_functions import create_image, create_label, create_button
 
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
@@ -21,10 +22,10 @@ class CreateSpeakerForText:
 
     def __init__(self, root):
         self.root = root
-        self.speaker_image = tk.PhotoImage(file=self.IMAGEPATH)
+        self.speaker_image = create_image(image_path=self.IMAGEPATH)
         self.font = FontManager()
         self.error = False
-        self.error_label = tk.Label(self.root, fg='red', font=self.font.LABEL_FONTS['Errors'])
+        self.error_label = create_label(root=self.root, fg='red', font=self.font.LABEL_FONTS['Errors'])
         main_logger.info(f'Класс синтезатора был проинициализирован в {self.root.title()}')
 
     def set_error_for_exceptions(self, text):
@@ -36,12 +37,12 @@ class CreateSpeakerForText:
     def create_btn(self, text_widget, image=None, current_lang: str = 'English'):
         if image is None:
             image = self.speaker_image
-        btn = tk.Button(self.root, image=image, borderwidth=0,
-                        command=lambda: threading.Thread(target=self.play_audio,
-                                                         kwargs={
-                                                             'text': text_widget.get("1.0", tk.END),
-                                                             'current_language': current_lang}
-                                                         ).start())
+        btn = create_button(root=self.root, image=image, borderwidth=0,
+                            command=lambda: threading.Thread(target=self.play_audio,
+                                                             kwargs={
+                                                                 'text': text_widget.get("1.0", tk.END),
+                                                                 'current_language': current_lang}
+                                                             ).start())
         btn.bind("<Enter>", btn.config(cursor="hand2"))
         return btn
 

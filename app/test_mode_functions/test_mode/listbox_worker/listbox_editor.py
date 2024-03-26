@@ -1,9 +1,9 @@
 import tkinter as tk
-from tkinter import Label
-from app.config import main_logger, exceptions_logger
+from app.config import main_logger
 from app.other.custom_print import colored_print
 from app.test_mode_functions.test_mode.listbox_worker.fileloader import FileLoaderClass
 from app.other.db.json_functions import edit_word_in_db, delete_word_in_db
+from app.tk_functions import create_button, create_entry, create_label
 
 
 class ListBoxEditor(FileLoaderClass):
@@ -20,14 +20,15 @@ class ListBoxEditor(FileLoaderClass):
 
     def create_edit_window(self, new_window, current_listbox,
                            label_text: str = None):
-        self.label_for_edit_win = Label(new_window, text=label_text, font=self.label_fonts['WordsOperation'])
+        self.label_for_edit_win = create_label(root=new_window, text=label_text,
+                                               font=self.label_fonts['WordsOperation'])
         self.label_for_edit_win.grid(column=0, row=0, sticky="nw", padx=10, pady=(15, 0))
 
-        self.edit_entry = tk.Entry(new_window, width=30, font=('Helvetica', 10))
-        self.confirm_button = tk.Button(new_window, text="Редактировать",
-                                        font=self.button_fonts['TestModeMenu']['WordsOperations']['Edit_btn'])
-        self.delete_word_button = tk.Button(new_window, text="Удалить",
-                                            font=self.button_fonts['TestModeMenu']['WordsOperations']['Delete_btn'])
+        self.edit_entry = create_entry(root=new_window, width=30, font=('Helvetica', 10))
+        self.confirm_button = create_button(root=new_window, text="Редактировать",
+                                            font=self.button_fonts['TestModeMenu']['WordsOperations']['Edit_btn'])
+        self.delete_word_button = create_button(root=new_window, text="Удалить",
+                                                font=self.button_fonts['TestModeMenu']['WordsOperations']['Delete_btn'])
 
         if current_listbox:
             self.confirm_button.configure(
@@ -84,10 +85,12 @@ class ListBoxEditor(FileLoaderClass):
                 edit_word_in_db(current_list[selected_index[0]], edited_word)
             current_list[selected_index[0]] = edited_word
             self.update_listbox()
+            message = f'Слово: {current_list[selected_index[0]]} было успешно отредактировано.'
+            main_logger.info(message)
+            colored_print(message, color='green')
         self.window_is_active.set(False)
-        message = f'Слово: {current_list[selected_index[0]]} было успешно отредактировано.'
-        main_logger.info(message)
-        colored_print(message, color='green')
+
+
 
     def delete_word(self, current_widget=None):
         selected_index = current_widget.curselection()
@@ -99,7 +102,6 @@ class ListBoxEditor(FileLoaderClass):
             self.SECOND_LANGUAGE_LIST.pop(selected_index[0])
             self.update_listbox()
         self.window_is_active.set(False)
-        message = (f'Слово: {self.FIRST_LANGUAGE_LIST[selected_index[0]]} и его перевод:'
-                   f' {self.SECOND_LANGUAGE_LIST[selected_index[0]]} было успешно удалены.')
+        message = 'Слово и его перевод было успешно удалены.'
         main_logger.info(message)
         colored_print(message, color='green')

@@ -6,6 +6,7 @@ import tkinter as tk
 from app.config import main_logger, exceptions_logger
 from app.fonts import FontManager
 from app.other.custom_print import colored_print
+from app.tk_functions import create_label
 
 
 class TextFieldFunctionality:
@@ -97,7 +98,8 @@ class TextWorker:
             self = args[0]
             try:
                 if self.error is False:
-                    self.error_label = tk.Label(kwargs['root'], fg='red', font=self.font_manager.LABEL_FONTS['Errors'])
+                    self.error_label = create_label(root=kwargs['root'], fg='red',
+                                                    font=self.font_manager.LABEL_FONTS['Errors'])
                 result = func(*args, **kwargs)
                 self.error = False
                 self.error_label.pack_forget()

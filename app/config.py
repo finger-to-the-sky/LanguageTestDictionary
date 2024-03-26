@@ -1,9 +1,8 @@
 import os
 from tinydb import TinyDB
-
 from app.logger import get_logger
 
-TITLE = 'English Test Dictionary'
+TITLE = 'Language Test Dictionary'
 SIZE_WINDOW = '1024x800+400+100'
 SIZE_TEST_MODE_CHOOSE_WINDOW = '1000x400+400+200'
 SIZE_TEST_MODE_MAIN_WINDOW = '1250x650'
@@ -14,7 +13,7 @@ LANGUAGES = {
     'Russian': 'ru',
     'Korean': 'ko',
     'Polish': 'pl',
-    'German': 'ффф'
+    'German': 'de'
 }
 
 LANGUAGES_LIST = list(LANGUAGES.keys())

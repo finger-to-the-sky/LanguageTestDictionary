@@ -1,8 +1,8 @@
-from tkinter import Toplevel, Label
 from app.config import SIZE_TEST_MODE_CHOOSE_WINDOW, exceptions_logger, main_logger
-from tkinter.ttk import Style, Button
+from tkinter.ttk import Style
 from app.fonts import FontManager
 from app.other.custom_print import colored_print
+from app.tk_functions import create_top_level, create_label, create_ttk_button
 
 
 class TestModeChooseClass:
@@ -11,12 +11,12 @@ class TestModeChooseClass:
 
     def __init__(self, root):
         self.root = root
-        self.window = Toplevel(root)
+        self.window = create_top_level(root=root)
         self.window.title(self.TITLE)
         self.window.geometry(self._SIZE_WINDOW)
 
         self.label_font = FontManager().LABEL_FONTS
-        self.label = Label(self.window, text='Выберите режим', font=self.label_font['Header'])
+        self.label = create_label(self.window, text='Выберите режим', font=self.label_font['Header'])
         self.label.pack(pady=15)
         main_logger.info(f'Класс {TestModeChooseClass.__name__} был успешно инициализирован.')
 
@@ -27,7 +27,7 @@ class TestModeChooseClass:
         default_button_style = Style()
         default_button_style.configure(style='TestButton.TButton', padding=(10, 5, 10, 5),
                                        font=self.label_font['Header'], background='#d3d3d3', wraplength=220)
-        button = Button(self.window, text=text_button, style=style_button, width=15)
+        button = create_ttk_button(self.window, text=text_button, style=style_button, width=15)
         if cls_worker:
             button.configure(command=lambda: (cls_worker(root=self.root), self.window.destroy()))
         else:

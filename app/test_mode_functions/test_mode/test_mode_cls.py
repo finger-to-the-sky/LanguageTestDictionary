@@ -3,6 +3,8 @@ import tkinter as tk
 from copy import copy
 from tkinter import messagebox, ttk
 from app.config import SIZE_TEST_MODE_WINDOW, main_logger, exceptions_logger
+from app.tk_functions import create_boolean_var, create_string_var, create_top_level, create_frame, create_button, \
+    create_label, create_entry, create_radio_button, create_int_var, create_ttk_treeview
 from app.translator.text_field_functionality import TextFieldFunctionality
 from app.test_mode_functions.test_mode.listbox_worker.listbox_editor import ListBoxEditor
 from app.other.db.json_functions import add_word_in_db
@@ -31,19 +33,19 @@ class TestModeClass:
 
         self.window_mode = None
         self.text_worker = None
-        self.is_visible_results = tk.BooleanVar()
+        self.is_visible_results = create_boolean_var()
         self.is_visible_results.set(False)
-        self.button_clicked = tk.BooleanVar()
+        self.button_clicked = create_boolean_var()
         self.button_clicked.set(False)
 
         # error text field
         self.error = None
-        self.error_text = tk.StringVar()
-        self.main_win_error = tk.BooleanVar()
+        self.error_text = create_string_var()
+        self.main_win_error = create_boolean_var()
         self.main_win_error.set(False)
 
-        self.window = tk.Toplevel(self.root)
-        self.frame = tk.Frame(self.window)
+        self.window = create_top_level(root=self.root)
+        self.frame = create_frame(root=self.window)
         self.window.focus_set()
         self.window.title(self.title)
         self.window.geometry(self.size_window)
@@ -57,24 +59,24 @@ class TestModeClass:
         self.words_worker.SECOND_LANGUAGE_LIST = self.second_list
         self.words_worker.update_listbox()
 
-        self.clear_btn = tk.Button(self.frame, text='Очистить список',
-                                   width=20, height=3,
-                                   font=self.button_fonts['TestModeMenu']['Clear_btn'], bg='#DC6060',
-                                   command=lambda: (self.words_worker.clear_lists(),
-                                                    self.clear_error()
-                                                    ))
-        self.start_btn = tk.Button(self.frame, text='Начать',
-                                   width=20, height=3,
-                                   font=self.button_fonts['TestModeMenu']['Start_btn'], bg='#60DC70',
-                                   command=self.start_mode
-                                   )
+        self.clear_btn = create_button(root=self.frame, text='Очистить список',
+                                       width=20, height=3,
+                                       font=self.button_fonts['TestModeMenu']['Clear_btn'], bg='#DC6060',
+                                       command=lambda: (self.words_worker.clear_lists(),
+                                                        self.clear_error()
+                                                        ))
+        self.start_btn = create_button(root=self.frame, text='Начать',
+                                       width=20, height=3,
+                                       font=self.button_fonts['TestModeMenu']['Start_btn'], bg='#60DC70',
+                                       command=self.start_mode
+                                       )
         self.clear_btn.grid(column=2, row=1, pady=(220, 0), padx=(20, 0))
         self.start_btn.grid(column=2, row=1, pady=(370, 0), padx=(20, 0))
         main_logger.info(f'Инициализация класса {TestModeClass.__name__} прошла успешно.')
 
     def set_error(self, text, window):
         self.error_text.set(text)
-        error_label = tk.Label(window, textvariable=self.error_text, fg='red', font=self.label_fonts['Errors'])
+        error_label = create_label(root=window, textvariable=self.error_text, fg='red', font=self.label_fonts['Errors'])
         self.main_win_error.set(True)
         return error_label
 
@@ -87,12 +89,12 @@ class TestModeClass:
             exceptions_logger.error(f'self.error = {self.error} был не найден')
 
     def set_header(self, window, label_text):
-        label = tk.Label(window, text=label_text, font=self.label_fonts['Header'])
+        label = create_label(root=window, text=label_text, font=self.label_fonts['Header'])
         label.pack()
         return label
 
     def create_window_mode(self):
-        self.window_mode = tk.Toplevel(self.root)
+        self.window_mode = create_top_level(root=self.root)
         self.window_mode.title(self.title)
         self.window_mode.geometry(SIZE_TEST_MODE_WINDOW)
         self.set_header(self.window_mode, self.title)
@@ -130,41 +132,41 @@ class TestModeClass:
         len_wl = len(words_list)
 
         # Labels
-        counter_label = tk.Label(self.window_mode, text=len_wl, font=self.label_fonts['Counter'])
-        question_label = tk.Label(self.window_mode, font=self.label_fonts['TestModeWord'], wraplength=150)
+        counter_label = create_label(root=self.window_mode, text=len_wl, font=self.label_fonts['Counter'])
+        question_label = create_label(root=self.window_mode, font=self.label_fonts['TestModeWord'], wraplength=150)
 
         # Entry widget for answering with needed instruments
-        answer_entry = tk.Entry(self.window_mode, width=20, font=self.text_fonts['EntryWidget'])
+        answer_entry = create_entry(root=self.window_mode, width=20, font=self.text_fonts['EntryWidget'])
         answer_entry.focus_set()
         TextFieldFunctionality.russian_add_hotkeys(root=self.window_mode, text_widgets=[answer_entry])
         TextFieldFunctionality.create_context_menu(root=self.window_mode, text_widgets=[answer_entry])
 
         # Radiobutton for not other mode questions
-        selected_radio = tk.IntVar()
+        selected_radio = create_int_var()
         selected_radio.set(-1)
-        radio_button1 = tk.Radiobutton(
-            self.window_mode, variable=selected_radio,
+        radio_button1 = create_radio_button(
+            root=self.window_mode, variable=selected_radio,
             font=self.button_fonts['TestModeButtons']['RadioButtons'], value=0,
             command=lambda: selected_radio.get()
         )
-        radio_button2 = tk.Radiobutton(
-            self.window_mode, variable=selected_radio,
+        radio_button2 = create_radio_button(
+            root=self.window_mode, variable=selected_radio,
             font=self.button_fonts['TestModeButtons']['RadioButtons'], value=1,
             command=lambda: selected_radio.get()
         )
-        radio_button3 = tk.Radiobutton(
-            self.window_mode, variable=selected_radio,
+        radio_button3 = create_radio_button(
+            root=self.window_mode, variable=selected_radio,
             font=self.button_fonts['TestModeButtons']['RadioButtons'], value=2,
             command=lambda: selected_radio.get()
         )
         # Buttons
-        continue_btn = tk.Button(self.window_mode, text='Далее',
-                                 font=self.button_fonts['TestModeButtons']['ContinueMode_btn'],
-                                 width=10, height=2, bg='#60DC70')
-        quit_btn = tk.Button(self.window_mode, text='Завершить',
-                             font=self.button_fonts['TestModeButtons']['ExitMode_btn'],
-                             width=15, height=2, bg='#DC6060',
-                             command=self.finish_mode)
+        continue_btn = create_button(root=self.window_mode, text='Далее',
+                                     font=self.button_fonts['TestModeButtons']['ContinueMode_btn'],
+                                     width=10, height=2, bg='#60DC70')
+        quit_btn = create_button(root=self.window_mode, text='Завершить',
+                                 font=self.button_fonts['TestModeButtons']['ExitMode_btn'],
+                                 width=15, height=2, bg='#DC6060',
+                                 command=self.finish_mode)
 
         self.window_mode.bind("<Escape>", lambda event: self.finish_mode())
 
@@ -308,7 +310,8 @@ class TestModeClass:
         style.configure("Treeview.Heading", font=self.listbox_font['ResultTableHeader'])
         style.configure("Treeview.Cell", font=self.listbox_font['ResultTableContent'])
 
-        tree = ttk.Treeview(self.window_mode, columns=column_name, show="headings", selectmode=selectmode, height=20)
+        tree = create_ttk_treeview(root=self.window_mode, columns=column_name, show="headings", selectmode=selectmode,
+                                   height=20)
         tree.tag_configure("Treeview.Cell", font=self.listbox_font['ResultTableContent'])
 
         tree.heading(column_name, text=column_name, anchor=tk.W)
@@ -350,23 +353,23 @@ class TestModeClass:
         incorrect_table.bind('<ButtonRelease-1>', self.answer_redlist)
         incorrect_table.bind("<Enter>", incorrect_table.config(cursor="hand2"))
 
-        hidden_btn = tk.Button(self.window_mode, text='Показать результаты', width=25, height=2,
-                               font=self.button_fonts['TestModeButtons']['ResultButtons']['ShowTable_btn'],
-                               command=toogle_table
-                               )
-        exit_btn = tk.Button(self.window_mode, text='Выйти', width=25, height=2,
-                             font=self.button_fonts['TestModeButtons']['ResultButtons']['Exit_btn'],
-                             command=lambda: (
-                                 self.clear_user_answers_list(),
-                                 self.exit())
-                             )
-        restart_btn = tk.Button(self.window_mode, text='Начать заново', width=25, height=2,
-                                font=self.button_fonts['TestModeButtons']['ResultButtons']['Restart_btn'],
-                                command=lambda: (
-                                    self.clear_user_answers_list(),
-                                    self.window_mode.destroy(),
-                                    self.start_mode())
-                                )
+        hidden_btn = create_button(root=self.window_mode, text='Показать результаты', width=25, height=2,
+                                   font=self.button_fonts['TestModeButtons']['ResultButtons']['ShowTable_btn'],
+                                   command=toogle_table
+                                   )
+        exit_btn = create_button(root=self.window_mode, text='Выйти', width=25, height=2,
+                                 font=self.button_fonts['TestModeButtons']['ResultButtons']['Exit_btn'],
+                                 command=lambda: (
+                                     self.clear_user_answers_list(),
+                                     self.exit())
+                                 )
+        restart_btn = create_button(root=self.window_mode, text='Начать заново', width=25, height=2,
+                                    font=self.button_fonts['TestModeButtons']['ResultButtons']['Restart_btn'],
+                                    command=lambda: (
+                                        self.clear_user_answers_list(),
+                                        self.window_mode.destroy(),
+                                        self.start_mode())
+                                    )
         restart_btn.pack(pady=10)
         exit_btn.pack()
         hidden_btn.pack(pady=15)

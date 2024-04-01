@@ -4,7 +4,7 @@ import gtts
 from os import environ
 import tkinter as tk
 from gtts import gTTS
-from app.config import LANGUAGES
+from app.config import LANGUAGES, PROJECT_DIR
 from app.config import main_logger, exceptions_logger
 from app.fonts import FontManager
 from app.other.custom_print import colored_print
@@ -15,10 +15,10 @@ import pygame
 
 
 class CreateSpeakerForText:
-    FILES_DIRECTORY = './app/other/audio/'
+    FILES_DIRECTORY = f'{PROJECT_DIR}/app/other/audio/'
     DEFAULT_FILE = 'text.mp3'
     FILEPATH = f'{FILES_DIRECTORY}{DEFAULT_FILE}'
-    IMAGEPATH = './app/other/icons/speakers/speaker24.png'
+    IMAGEPATH = f'{PROJECT_DIR}/app/other/icons/speakers/speaker24.png'
 
     def __init__(self, root):
         self.root = root

@@ -1,6 +1,7 @@
 import os
 from tinydb import TinyDB
 from app.logger import get_logger
+from app.other.get_path import get_path_project
 
 TITLE = 'Language Test Dictionary'
 SIZE_WINDOW = '1024x800+400+100'
@@ -15,21 +16,22 @@ LANGUAGES = {
     'Polish': 'pl',
     'German': 'de'
 }
-
 LANGUAGES_LIST = list(LANGUAGES.keys())
 
-current_directory = os.getcwd()
+PROJECT_DIR = get_path_project()
 
-if 'dist' in current_directory:
-    current_directory = current_directory.replace('\\dist', '')
 
-FILE_INSTRUCTION_PATH = f'{current_directory}\\app\\other\\instruction\\instruction.pdf'
+if 'dist' in PROJECT_DIR:
+    PROJECT_DIR = PROJECT_DIR.replace('\\dist', '')
 
-updated_path = current_directory.replace('\\', '/')
+FILE_INSTRUCTION_PATH = f'{PROJECT_DIR}\\app\\other\\instruction\\instruction.pdf'
+
+updated_path = PROJECT_DIR.replace('\\', '/')
 red_list_db = TinyDB(f'{updated_path}/app/other/db/red_list.json')
 cache_files_db = TinyDB(f'{updated_path}/app/other/db/cache_files.json')
 
 main_logger = get_logger('main')
 exceptions_logger = get_logger('exceptions', filemode='a')
+tk_functions_logger = get_logger('tk_functions_logger')
 red_list_logger = get_logger('red_list_db')
 cache_files_logger = get_logger('cache_files_db')

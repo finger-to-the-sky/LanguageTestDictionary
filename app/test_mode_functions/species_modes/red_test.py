@@ -1,6 +1,6 @@
 from app.config import SIZE_TEST_MODE_MAIN_WINDOW, red_list_db, main_logger
 from app.other.custom_print import colored_print
-from app.test_mode_functions.test_mode.test_mode_cls import TestModeClass
+from app.test_mode_functions.test_mode.test_mode_cls import ModeTestWordsClass
 
 
 class RedTestWordsMode:
@@ -12,10 +12,10 @@ class RedTestWordsMode:
     def __init__(self, root):
         self.root = root
         self.cache_loader()
-        TestModeClass(root=self.root, title=self.TITLE,
-                      size_window=self._SIZE_WINDOW,
-                      first_list=self.FIRST_LIST_WORDS, second_list=self.SECOND_LIST_WORDS,
-                      is_red_test=True)
+        ModeTestWordsClass(root=self.root, title=self.TITLE,
+                           size_window=self._SIZE_WINDOW,
+                           first_list=self.FIRST_LIST_WORDS, second_list=self.SECOND_LIST_WORDS,
+                           is_red_test=True)
         main_logger.info(f'Класс {RedTestWordsMode.__name__} был успешно проинициализирован')
 
     def cache_loader(self):

@@ -5,7 +5,7 @@ from app.other.custom_print import colored_print
 from app.tk_functions import create_top_level, create_label, create_ttk_button
 
 
-class TestModeChooseClass:
+class ModeChooseTestClass:
     _SIZE_WINDOW = SIZE_TEST_MODE_CHOOSE_WINDOW
     TITLE = 'Режим тестирования'
 
@@ -18,14 +18,14 @@ class TestModeChooseClass:
         self.label_font = FontManager().LABEL_FONTS
         self.label = create_label(self.window, text='Выберите режим', font=self.label_font['Header'])
         self.label.pack(pady=15)
-        main_logger.info(f'Класс {TestModeChooseClass.__name__} был успешно инициализирован.')
+        main_logger.info(f'Класс {ModeChooseTestClass.__name__} был успешно инициализирован.')
 
     def create_test_mode_button(self, text_button: str, cls_worker=None, func: tuple = None,
                                 style_button='TestButton.TButton',
                                 *args, **kwargs):
 
         default_button_style = Style()
-        default_button_style.configure(style='TestButton.TButton', padding=(10, 5, 10, 5),
+        default_button_style.configure(style=style_button, padding=(10, 5, 10, 5),
                                        font=self.label_font['Header'], background='#d3d3d3', wraplength=220)
         button = create_ttk_button(self.window, text=text_button, style=style_button, width=15)
         if cls_worker:

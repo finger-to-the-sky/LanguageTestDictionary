@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "etd"
+name = "ltd"
 version = "1.0"
-description = "English Test Dictionary"
-authors = ["Zagmakk"]
+description = "Language Test Dictionary"
+authors = ["ZagMak"]
 license = "MIT"
 readme = "README.md"
 

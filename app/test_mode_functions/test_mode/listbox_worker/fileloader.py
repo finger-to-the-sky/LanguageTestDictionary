@@ -9,7 +9,7 @@ from app.other.db.json_functions import clear_cache_filenames_db, download_file_
     cache_current_file
 from app.test_mode_functions.test_mode.listbox_worker.adder import ListBoxAdderClass
 import tkinter as tk
-from app.test_mode_functions.test_mode_choose import TestModeChooseClass
+from app.test_mode_functions.test_mode_choose import ModeChooseTestClass
 from app.tk_functions import create_button, create_listbox
 
 
@@ -80,7 +80,7 @@ class FileLoaderClass(ListBoxAdderClass):
         if self.window_is_active.get() is False:
             self.window_is_active.set(True)
 
-            win = TestModeChooseClass(self.window)
+            win = ModeChooseTestClass(self.window)
             win.window.protocol("WM_DELETE_WINDOW", lambda: (self.window_is_active.set(False), win.window.destroy()))
             win.label.configure(text='Выберите формат файла')
 

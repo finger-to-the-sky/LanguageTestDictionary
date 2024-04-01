@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import Tk, Frame, Label, Text, Button
 from app.test_mode_functions.test_mode.activation import test_mode_activate
 from app.tk_functions import create_label, create_button, create_text_widget
 from app.translator.languages_worker import LanguagesWorker
@@ -15,7 +14,7 @@ class MainWindow:
         self.size = size
 
     def create_root(self):
-        root = Tk()
+        root = tk.Tk()
         root.title(self.title)
         root.geometry(self.size)
         return root
@@ -32,12 +31,12 @@ class MainWindow:
         header = create_label(root=root, text=f'Добро пожаловать в {self.title}', font=label_font['Header'])
         header.pack(pady=(0, 20))
 
-        frame = Frame(root)
+        frame = tk.Frame(root)
         test_mode_button = create_button(root=frame, text='Режим тестирования',
-                                              font=button_font['StartChoosing_btn'],
-                                              command=lambda: test_mode_activate(root=root))
+                                         font=button_font['StartChoosing_btn'],
+                                         command=lambda: test_mode_activate(root=root))
         translate_file_btn = create_button(root=frame, text='Перевести файл',
-                                                font=button_font['TranslateFile_btn'])
+                                           font=button_font['TranslateFile_btn'])
 
         frame.pack(pady=20)
         translate_file_btn.grid(row=0, column=1, padx=(0, 30))
@@ -49,8 +48,8 @@ class MainWindow:
         user_text_widget.pack(pady=(15, 0))
         translated_text_widget.pack(pady=(15, 15))
 
-        lw = LanguagesWorker(root=root, user_text_widget=user_text_widget,
-                             translated_text_widget=translated_text_widget, frame=frame)
+        LanguagesWorker(root=root, user_text_widget=user_text_widget,
+                        translated_text_widget=translated_text_widget, frame=frame)
 
         # Hotkeys for russian keyboard
         TextFieldFunctionality.russian_add_hotkeys(root=root, text_widgets=(user_text_widget, translated_text_widget))

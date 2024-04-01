@@ -12,7 +12,7 @@ from app.fonts import FontManager
 from app.other.custom_print import colored_print
 
 
-class TestModeClass:
+class ModeTestWordsClass:
     USER_LIST_WORDS = {'correct': [], 'incorrect': {'user_word': [], 'incorrect_word': [],
                                                     'correct_answer': []}}
 
@@ -72,7 +72,7 @@ class TestModeClass:
                                        )
         self.clear_btn.grid(column=2, row=1, pady=(220, 0), padx=(20, 0))
         self.start_btn.grid(column=2, row=1, pady=(370, 0), padx=(20, 0))
-        main_logger.info(f'Инициализация класса {TestModeClass.__name__} прошла успешно.')
+        main_logger.info(f'Инициализация класса {ModeTestWordsClass.__name__} прошла успешно.')
 
     def set_error(self, text, window):
         self.error_text.set(text)

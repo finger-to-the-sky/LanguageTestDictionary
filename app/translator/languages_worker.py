@@ -4,13 +4,14 @@ from app.translator.speaker_functions import CreateSpeakerForText
 from app.translator.text_field_functionality import TextWorker
 from app.fonts import FontManager
 from app.tk_functions import create_image, create_button, create_ttk_combobox
+from app.config import PROJECT_DIR
 
 
 class LanguagesWorker:
     FROM_LANGUAGE = "English"
     TO_LANGUAGE = "Russian"
     TEXT_WORKER = TextWorker(src=FROM_LANGUAGE, dest=TO_LANGUAGE)
-    IMAGEPATH = './app/other/icons/clear/clear24.png'
+    IMAGEPATH = f'{PROJECT_DIR}/app/other/icons/clear/clear24.png'
 
     def __init__(self, root, user_text_widget, translated_text_widget, frame=None):
         self.root = root

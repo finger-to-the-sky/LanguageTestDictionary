@@ -5,6 +5,9 @@ This software was created to help users learn words in the language they are stu
 
 ![Language Test Dictionary gif](./LTD.gif)
 
+P.S. The "File Translation" and "Sentence Processing" functions have been left for future development. :pen: 
+
+My goal was to create a project that would perform its primary functionality. Also, in the future, there is a possibility of changing the design of the application, but for now, we are content with what we have. :upside_down_face:
 
 ## Content
 

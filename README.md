@@ -3,6 +3,8 @@ ___
 
 This software was created to help users learn words in the language they are studying. :orange_book:
 
+![Language Test Dictionary gif](./LTD.gif)
+
 
 ## Content
 

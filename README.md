@@ -1,16 +1,16 @@
 # Language Test Dictionary
 ___
 
-This software was created to help users learn words in the language they are studying.
+This software was created to help users learn words in the language they are studying. :orange_book:
 
 
 ## Content
 
-- [Technologies](#Technologies)
-- [How to run](#How-to-run)
-- [Testing](#Testing)
-- [Logs](#Logs)
-- [Instruction for use](./app/other/instruction/instruction.pdf)
+- [:man_technologist: Technologies](#Technologies)
+- [:rocket: How to run](#How-to-run)
+- [:white_check_mark: Testing](#Testing)
+- [:page_with_curl: Logs](#Logs)
+- [:scroll: Instruction for use](./app/other/instruction/instruction.pdf)
 
 ### Technologies
 

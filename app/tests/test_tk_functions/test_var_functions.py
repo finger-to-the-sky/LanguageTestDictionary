@@ -1,6 +1,6 @@
 from app.tk_functions import create_boolean_var, create_string_var, create_int_var
 from contextlib import nullcontext
-from app.tests.configuration import ROOT_KEYS_VAR, create_test_root
+from app.tests.configuration import ROOT_KEYS_VAR
 import pytest
 import tkinter as tk
 
@@ -10,22 +10,22 @@ class TestVariableFunctions:
     @pytest.mark.parametrize(
         'args, kwargs, expectation', ROOT_KEYS_VAR + [
 
-            ((), {'master': create_test_root(), 'value': False}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': 'Value'}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'value': 'True'}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': 123}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': [1, 2, 3]}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'value': {1, 2, 3}}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'value': {'value': False}}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'value': ('value', False)}, pytest.raises(AssertionError)),
+            ((), {'value': False}, nullcontext()),
+            ((), {'value': 'Value'}, pytest.raises(AssertionError)),
+            ((), {'value': 'True'}, nullcontext()),
+            ((), {'value': 123}, nullcontext()),
+            ((), {'value': [1, 2, 3]}, pytest.raises(AssertionError)),
+            ((), {'value': {1, 2, 3}}, pytest.raises(AssertionError)),
+            ((), {'value': {'value': False}}, pytest.raises(AssertionError)),
+            ((), {'value': ('value', False)}, pytest.raises(AssertionError)),
 
-            ((), {'master': create_test_root(), 'name': 'bool'}, nullcontext()),
-            ((), {'master': create_test_root(), 'name': 123}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': {'bool', 123}}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': [1, 2, 3]}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': (1, 2, 3)}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': {1, 2, 3}}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': False}, pytest.raises(AssertionError)),
+            ((), {'name': 'bool'}, nullcontext()),
+            ((), {'name': 123}, pytest.raises(AssertionError)),
+            ((), {'name': {'bool', 123}}, pytest.raises(AssertionError)),
+            ((), {'name': [1, 2, 3]}, pytest.raises(AssertionError)),
+            ((), {'name': (1, 2, 3)}, pytest.raises(AssertionError)),
+            ((), {'name': {1, 2, 3}}, pytest.raises(AssertionError)),
+            ((), {'name': False}, pytest.raises(AssertionError)),
         ]
     )
     def test_create_boolean_var(self, args, kwargs, expectation):
@@ -36,22 +36,22 @@ class TestVariableFunctions:
     @pytest.mark.parametrize(
         'args, kwargs, expectation', ROOT_KEYS_VAR + [
 
-            ((), {'master': create_test_root(), 'value': False}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': 'Value'}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': 'True'}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': 123}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': [1, 2, 3]}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': {1, 2, 3}}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': {'value': False}}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': ('value', False)}, nullcontext()),
+            ((), {'value': False}, nullcontext()),
+            ((), {'value': 'Value'}, nullcontext()),
+            ((), {'value': 'True'}, nullcontext()),
+            ((), {'value': 123}, nullcontext()),
+            ((), {'value': [1, 2, 3]}, nullcontext()),
+            ((), {'value': {1, 2, 3}}, nullcontext()),
+            ((), {'value': {'value': False}}, nullcontext()),
+            ((), {'value': ('value', False)}, nullcontext()),
 
-            ((), {'master': create_test_root(), 'name': 'bool'}, nullcontext()),
-            ((), {'master': create_test_root(), 'name': 123}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': {'bool', 123}}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': [1, 2, 3]}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': (1, 2, 3)}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': {1, 2, 3}}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': False}, pytest.raises(AssertionError)),
+            ((), {'name': 'bool'}, nullcontext()),
+            ((), {'name': 123}, pytest.raises(AssertionError)),
+            ((), {'name': {'bool', 123}}, pytest.raises(AssertionError)),
+            ((), {'name': [1, 2, 3]}, pytest.raises(AssertionError)),
+            ((), {'name': (1, 2, 3)}, pytest.raises(AssertionError)),
+            ((), {'name': {1, 2, 3}}, pytest.raises(AssertionError)),
+            ((), {'name': False}, pytest.raises(AssertionError)),
         ]
     )
     def test_create_string_var(self, args, kwargs, expectation):
@@ -62,22 +62,22 @@ class TestVariableFunctions:
     @pytest.mark.parametrize(
         'args, kwargs, expectation', ROOT_KEYS_VAR + [
 
-            ((), {'master': create_test_root(), 'value': False}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': 'Value'}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': 'True'}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': 123}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': [1, 2, 3]}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': {1, 2, 3}}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': {'value': False}}, nullcontext()),
-            ((), {'master': create_test_root(), 'value': ('value', False)}, nullcontext()),
+            ((), {'value': False}, nullcontext()),
+            ((), {'value': 'Value'}, nullcontext()),
+            ((), {'value': 'True'}, nullcontext()),
+            ((), {'value': 123}, nullcontext()),
+            ((), {'value': [1, 2, 3]}, nullcontext()),
+            ((), {'value': {1, 2, 3}}, nullcontext()),
+            ((), {'value': {'value': False}}, nullcontext()),
+            ((), {'value': ('value', False)}, nullcontext()),
 
-            ((), {'master': create_test_root(), 'name': 'bool'}, nullcontext()),
-            ((), {'master': create_test_root(), 'name': 123}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': {'bool', 123}}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': [1, 2, 3]}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': (1, 2, 3)}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': {1, 2, 3}}, pytest.raises(AssertionError)),
-            ((), {'master': create_test_root(), 'name': False}, pytest.raises(AssertionError)),
+            ((), {'name': 'bool'}, nullcontext()),
+            ((), {'name': 123}, pytest.raises(AssertionError)),
+            ((), {'name': {'bool', 123}}, pytest.raises(AssertionError)),
+            ((), {'name': [1, 2, 3]}, pytest.raises(AssertionError)),
+            ((), {'name': (1, 2, 3)}, pytest.raises(AssertionError)),
+            ((), {'name': {1, 2, 3}}, pytest.raises(AssertionError)),
+            ((), {'name': False}, pytest.raises(AssertionError)),
         ]
     )
     def test_create_int_var(self, args, kwargs, expectation):

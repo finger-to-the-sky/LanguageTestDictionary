@@ -4,12 +4,6 @@ import tkinter as tk
 import pytest
 
 
-@pytest.fixture
-def test_root():
-    root = tk.Tk()
-    return root
-
-
 def create_test_style(name: str, *args, **kwargs):
     style = ttk.Style()
     style.configure(style=name, *args, **kwargs)
@@ -18,6 +12,7 @@ def create_test_style(name: str, *args, **kwargs):
 
 ROOT_KEYS_VAR = [
     ((), {'master': tk.Tk()}, nullcontext()),
+    ((), {'master': tk.Toplevel(tk.Tk())}, nullcontext()),
     ((), {'master': tk.Frame(tk.Tk())}, nullcontext()),
     ((), {'master': 'root'}, pytest.raises(AssertionError)),
     ((), {'master': 123}, pytest.raises(AssertionError)),
@@ -30,6 +25,7 @@ ROOT_KEYS_VAR = [
 ROOT_KEYS = [
     (tk.Tk(), (), {}, nullcontext()),
     (tk.Frame(tk.Tk()), (), {}, nullcontext()),
+    (tk.Toplevel(tk.Tk()), (), {}, nullcontext()),
     ('test', (), {}, pytest.raises(AssertionError)),
     (123, (), {}, pytest.raises(AssertionError)),
     ({'test': 123}, (), {}, pytest.raises(AssertionError)),

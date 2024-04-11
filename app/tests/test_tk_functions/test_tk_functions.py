@@ -1,11 +1,12 @@
+import tkinter as tk
+import pytest
 from app.config import PROJECT_DIR
 from app.tk_functions import (create_image, create_label, create_ttk_combobox, create_entry,
                               create_listbox, create_frame, create_text_widget, create_ttk_treeview)
 from tkinter import ttk
-import tkinter as tk
-import pytest
 from contextlib import nullcontext
-from app.tests.configuration import COLOR_GROUND_KEYS, FONT_KEYS, test_root
+from app.tests.configuration import COLOR_GROUND_KEYS, FONT_KEYS
+from app.tests.fixtures.test_root import test_root
 
 
 class TestTkFunctions:

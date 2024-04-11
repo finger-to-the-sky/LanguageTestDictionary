@@ -1,7 +1,7 @@
 import tkinter as tk
-from app.test_mode_functions.test_mode.activation import test_mode_activate
+from app.mode_functions.test_mode.activation import test_mode_activate
 from app.tk_functions import create_label, create_button, create_text_widget, create_frame
-from app.translator.languages_worker import LanguagesWorker
+from app.translator.languages_worker.languages_worker import LanguagesWorker
 from app.translator.text_field_functionality import TextFieldFunctionality
 from app.config import TITLE, SIZE_WINDOW, main_logger
 from app.other.instruction.instructions import set_instruction_field
@@ -9,7 +9,16 @@ from app.fonts import FontManager
 
 
 class MainWindow:
+    """
+    Class for initializing the main window of the application.
+    """
+
     def __init__(self, title: str = None, size: str = None):
+        """
+        :param title: The title of the main window.
+        :param size: The size of the main window.
+        """
+
         self.title = title
         self.size = size
         self.font_manager = FontManager()
@@ -34,12 +43,22 @@ class MainWindow:
         main_logger.info('Приложение запущено')
 
     def create_root(self):
+        """
+        Creates an object of tkinter.Tk()
+        :return:
+        """
+
         root = tk.Tk()
         root.title(self.title)
         root.geometry(self.size)
         return root
 
     def show_elements(self):
+        """
+        Displays all created elements in the class.
+        :return:
+        """
+
         self.header.pack(pady=(0, 20))
         self.frame.pack(pady=20)
         self.translate_file_btn.grid(row=0, column=1, padx=(0, 30))
@@ -48,8 +67,19 @@ class MainWindow:
         self.translated_text_widget.pack(pady=(15, 15))
 
     def other_functions(self):
-        LanguagesWorker(root=self.root, user_text_widget=self.user_text_widget,
-                        translated_text_widget=self.translated_text_widget, frame=self.frame)
+        """
+        Connects all necessary third-party classes
+        :return:
+        """
+
+        lw = LanguagesWorker(root=self.root, user_text_widget=self.user_text_widget,
+                             translated_text_widget=self.translated_text_widget, frame=self.frame)
+        lw.show_elements(combo_from_pos={"row": 0, "column": 2, "padx": (0, 40)},
+                         combo_to_pos={"row": 0, "column": 3, "padx": (0, 0)},
+                         translate_btn_pos={},
+                         voice_btn1_pos={"x": 915, "y": 175},
+                         voice_btn2_pos={"x": 915, "y": 340},
+                         clear_btn_pos={"x": 915, "y": 140})
 
         # Hotkeys for russian keyboard
         TextFieldFunctionality.russian_add_hotkeys(root=self.root,
@@ -62,6 +92,11 @@ class MainWindow:
         set_instruction_field(self.root, text=f'Инструкция по работе с {self.title}', side=tk.BOTTOM, pady=30)
 
     def run(self):
+        """
+        Runs the application.
+        :return:
+        """
+
         self.show_elements()
         self.other_functions()
         self.root.mainloop()

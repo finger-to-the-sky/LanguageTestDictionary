@@ -7,9 +7,9 @@ from app.other.custom_print import colored_print
 from app.other.instruction.instructions import set_instruction_field
 from app.other.db.json_functions import clear_cache_filenames_db, download_file_from_cache, add_word_in_db, \
     cache_current_file
-from app.test_mode_functions.test_mode.listbox_worker.adder import ListBoxAdderClass
+from app.mode_functions.test_mode.listbox_worker.adder import ListBoxAdderClass
 import tkinter as tk
-from app.test_mode_functions.test_mode_choose import ModeChooseTestClass
+from app.mode_functions.test_mode_choose import ModeChooseTestClass
 from app.tk_functions import create_button, create_listbox
 
 

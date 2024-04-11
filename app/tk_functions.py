@@ -1,18 +1,28 @@
+"""
+Module containing processed functions for creating tkinter elements
+"""
+
 import tkinter as tk
 from tkinter import ttk
-
 from app.other.custom_print import colored_print
 from app.config import tk_functions_logger
 
 
 def tk_exceptions(func):
+    """
+    Decorator for handling exceptions when creating tkinter objects.
+    :param func:
+    :return:
+    """
     def wrapper(*args, **kwargs):
         try:
-            result = func(*args, **kwargs)
-            return result
-        except (AttributeError, tk.TclError, TypeError):
-            message = f'Ошибка входящих данных в функции {func.__name__}'
+            return func(*args, **kwargs)
+        except (AttributeError, tk.TclError, TypeError) as e:
+            message = f'Ошибка входящих данных в функции {func.__name__} {e}'
             tk_functions_logger.error(message)
+            if 'pyimage' in str(e):
+                kwargs['image'] = None
+                return func(*args, **kwargs)
             colored_print(message, color='red', style='bright')
 
     return wrapper

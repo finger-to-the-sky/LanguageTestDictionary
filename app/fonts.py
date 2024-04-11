@@ -3,8 +3,11 @@ from app.config import main_logger
 
 
 class FontManager:
-    MAIN_FONT = 'Georgia'
+    """
+    Class for configuring the fonts of the application.
+    """
 
+    MAIN_FONT = 'Georgia'
     LABEL_FONTS = {
         'Header': (MAIN_FONT, 20),
         'Instruction': (MAIN_FONT, 14),
@@ -14,7 +17,6 @@ class FontManager:
         'WordsOperation': (MAIN_FONT, 10),
         'TestModeWord': (MAIN_FONT, 14)
     }
-
     BUTTON_FONTS = {
         'TranslatorButtons': {
             'StartChoosing_btn': (MAIN_FONT, 10),
@@ -49,12 +51,10 @@ class FontManager:
             'DownloadCache_btn': (MAIN_FONT, 10)
         }
     }
-
     TEXT_FONTS = {
         'EntryWidget': (MAIN_FONT, 10),
         'TextWidget': (MAIN_FONT, 12)
     }
-
     LISTBOX_FONTS = {
         'WordsList': (MAIN_FONT, 10),
         'CachingWindow': (MAIN_FONT, 10),

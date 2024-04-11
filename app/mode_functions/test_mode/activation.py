@@ -1,6 +1,6 @@
-from app.test_mode_functions.species_modes import red_test, sentences_test
-from app.test_mode_functions.species_modes.onehudred_test import OneHundredMode
-from app.test_mode_functions.test_mode_choose import ModeChooseTestClass
+from app.mode_functions.species_modes import red_test, sentences_test
+from app.mode_functions.species_modes.onehudred_test import OneHundredMode
+from app.mode_functions.test_mode_choose import ModeChooseTestClass
 
 
 def test_mode_activate(root):

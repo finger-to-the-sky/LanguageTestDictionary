@@ -1,6 +1,6 @@
 from app.config import SIZE_TEST_MODE_MAIN_WINDOW, red_list_db, main_logger
 from app.other.custom_print import colored_print
-from app.test_mode_functions.test_mode.test_mode_cls import ModeTestWordsClass
+from app.mode_functions.test_mode.test_mode_cls import ModeTestWordsClass
 
 
 class RedTestWordsMode:

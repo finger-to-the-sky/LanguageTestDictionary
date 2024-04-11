@@ -1,5 +1,5 @@
 from app.config import SIZE_TEST_MODE_MAIN_WINDOW
-from app.test_mode_functions.test_mode.test_mode_cls import ModeTestWordsClass
+from app.mode_functions.test_mode.test_mode_cls import ModeTestWordsClass
 from app.config import main_logger
 
 

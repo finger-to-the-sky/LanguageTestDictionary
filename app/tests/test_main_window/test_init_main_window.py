@@ -1,12 +1,5 @@
 import tkinter as tk
-from LanguageTestDictionary import MainWindow
-import pytest
-
-
-@pytest.fixture
-def main_window():
-    main = MainWindow()
-    return main
+from app.tests.fixtures.test_main_window.test_init_main_window import main_window
 
 
 class TestMainWindow:
@@ -34,6 +27,3 @@ class TestMainWindow:
         assert main_window.translate_file_btn.winfo_manager() == 'grid'
         assert main_window.user_text_widget.winfo_manager() == 'pack'
         assert main_window.translated_text_widget.winfo_manager() == 'pack'
-
-
-

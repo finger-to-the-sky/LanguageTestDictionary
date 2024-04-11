@@ -1,7 +1,7 @@
 import tkinter as tk
 from app.config import main_logger
 from app.other.custom_print import colored_print
-from app.test_mode_functions.test_mode.listbox_worker.fileloader import FileLoaderClass
+from app.mode_functions.test_mode.listbox_worker.fileloader import FileLoaderClass
 from app.other.db.json_functions import edit_word_in_db, delete_word_in_db
 from app.tk_functions import create_button, create_entry, create_label
 

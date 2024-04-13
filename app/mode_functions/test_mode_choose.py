@@ -1,4 +1,5 @@
-from app.config import SIZE_TEST_MODE_CHOOSE_WINDOW, exceptions_logger, main_logger
+from app.config import SIZE_TEST_MODE_CHOOSE_WINDOW, main_logger
+from app.logger import exceptions_logger
 from tkinter.ttk import Style
 from app.fonts import FontManager
 from app.other.custom_print import colored_print

@@ -1,6 +1,6 @@
 from app.tk_functions import create_boolean_var, create_string_var, create_int_var
 from contextlib import nullcontext
-from app.tests.configuration import ROOT_KEYS_VAR
+from app.tests.configurations import ROOT_KEYS_VAR
 import pytest
 import tkinter as tk
 

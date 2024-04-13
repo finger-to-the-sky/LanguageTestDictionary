@@ -5,7 +5,7 @@ from app.tk_functions import (create_image, create_label, create_ttk_combobox, c
                               create_listbox, create_frame, create_text_widget, create_ttk_treeview)
 from tkinter import ttk
 from contextlib import nullcontext
-from app.tests.configuration import COLOR_GROUND_KEYS, FONT_KEYS
+from app.tests.configurations import COLOR_GROUND_KEYS, FONT_KEYS
 from app.tests.fixtures.test_root import test_root
 
 

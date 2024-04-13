@@ -2,7 +2,8 @@ import random
 import tkinter as tk
 from copy import copy
 from tkinter import messagebox, ttk
-from app.config import SIZE_TEST_MODE_WINDOW, main_logger, exceptions_logger
+from app.config import SIZE_TEST_MODE_WINDOW, main_logger
+from app.logger import exceptions_logger
 from app.tk_functions import create_boolean_var, create_string_var, create_top_level, create_frame, create_button, \
     create_label, create_entry, create_radio_button, create_int_var, create_ttk_treeview
 from app.translator.text_field_functionality import TextFieldFunctionality

@@ -1,6 +1,6 @@
 import pytest
 import tkinter as tk
-from app.tests.configuration import ROOT_KEYS
+from app.tests.configurations import ROOT_KEYS
 from app.tk_functions import (create_label, create_ttk_combobox, create_entry, create_top_level,
                               create_listbox, create_frame, create_text_widget, create_ttk_treeview, create_button,
                               create_ttk_button, create_radio_button, create_boolean_var,

@@ -3,7 +3,8 @@ import keyboard
 import pyperclip
 from googletrans import Translator
 import tkinter as tk
-from app.config import main_logger, exceptions_logger
+from app.config import main_logger
+from app.logger import exceptions_logger
 from app.fonts import FontManager
 from app.other.custom_print import colored_print
 from app.tk_functions import create_label

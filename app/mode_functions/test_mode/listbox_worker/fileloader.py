@@ -2,7 +2,8 @@ from tkinter import filedialog, messagebox
 from docx import Document
 from docx.opc.exceptions import PackageNotFoundError
 from pandas import read_excel
-from app.config import cache_files_db, main_logger, exceptions_logger
+from app.config import cache_files_db, main_logger
+from app.logger import exceptions_logger
 from app.other.custom_print import colored_print
 from app.other.instruction.instructions import set_instruction_field
 from app.other.db.json_functions import clear_cache_filenames_db, download_file_from_cache, add_word_in_db, \

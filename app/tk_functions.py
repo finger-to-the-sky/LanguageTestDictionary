@@ -5,7 +5,7 @@ Module containing processed functions for creating tkinter elements
 import tkinter as tk
 from tkinter import ttk
 from app.other.custom_print import colored_print
-from app.config import tk_functions_logger
+from app.logger import tk_functions_logger
 
 
 def tk_exceptions(func):

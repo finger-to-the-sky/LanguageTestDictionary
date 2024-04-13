@@ -1,4 +1,3 @@
-import os
 from tinydb import TinyDB
 from app.logger import get_logger
 from app.other.get_path import get_path_project
@@ -31,7 +30,3 @@ red_list_db = TinyDB(f'{updated_path}/app/other/db/red_list.json')
 cache_files_db = TinyDB(f'{updated_path}/app/other/db/cache_files.json')
 
 main_logger = get_logger('main')
-exceptions_logger = get_logger('exceptions', filemode='a')
-tk_functions_logger = get_logger('tk_functions_logger')
-red_list_logger = get_logger('red_list_db')
-cache_files_logger = get_logger('cache_files_db')

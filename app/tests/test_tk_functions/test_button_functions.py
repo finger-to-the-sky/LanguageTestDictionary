@@ -2,7 +2,7 @@ from contextlib import nullcontext
 from tkinter import ttk
 import tkinter as tk
 import pytest
-from app.tests.configuration import COLOR_GROUND_KEYS, FONT_KEYS, create_test_style
+from app.tests.configurations import COLOR_GROUND_KEYS, FONT_KEYS, create_test_style
 from app.tk_functions import create_ttk_button, create_button, create_int_var, create_radio_button
 from app.tests.fixtures.test_root import test_root
 

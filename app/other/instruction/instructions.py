@@ -1,7 +1,6 @@
 import webbrowser
 import tkinter as tk
 from app.config import FILE_INSTRUCTION_PATH, main_logger
-from app.logger import exceptions_logger
 from app.fonts import FontManager
 from app.other.custom_print import colored_print
 

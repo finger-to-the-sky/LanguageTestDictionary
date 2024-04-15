@@ -10,7 +10,7 @@ from app.other.db.json_functions import clear_cache_filenames_db, download_file_
     cache_current_file
 from app.mode_functions.test_mode.listbox_worker.adder import ListBoxAdderClass
 import tkinter as tk
-from app.mode_functions.test_mode_choose import ModeChooseTestClass
+from app.mode_functions.choose_window import WindowChooseClass
 from app.tk_functions import create_button, create_listbox
 
 
@@ -81,16 +81,24 @@ class FileLoaderClass(ListBoxAdderClass):
         if self.window_is_active.get() is False:
             self.window_is_active.set(True)
 
-            win = ModeChooseTestClass(self.window)
+            win = WindowChooseClass(self.window)
             win.window.protocol("WM_DELETE_WINDOW", lambda: (self.window_is_active.set(False), win.window.destroy()))
             win.label.configure(text='Выберите формат файла')
 
             set_instruction_field(window=win.window,
                                   text='Перед загрузкой ознакомьтесь с моей инструкцией по загрузке'),
 
-            win.create_test_mode_button('TXT', func=(self.load_from_txt,), side='left', padx=15)
-            win.create_test_mode_button('WORD', func=(self.load_from_word,), side='left', padx=45)
-            win.create_test_mode_button('EXCEL', func=(self.load_from_excel,), side='right', padx=15)
+            first = win.create_choose_button('TXT')
+            second = win.create_choose_button('WORD')
+            third = win.create_choose_button('EXCEL')
+
+            first.configure(command=lambda: (self.load_from_txt(), win.window.destroy()))
+            second.configure(command=lambda: (self.load_from_word(), win.window.destroy()))
+            third.configure(command=lambda: (self.load_from_excel(), win.window.destroy()))
+
+            first.pack(side='left', padx=15, ipady=60)
+            second.pack(side='left', padx=45, ipady=60)
+            third.pack(side='right', padx=15, ipady=60)
 
     def packing_words(self, words_list, excel=False):
         cache_words_list = []

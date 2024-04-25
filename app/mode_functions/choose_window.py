@@ -9,6 +9,11 @@ from app.tk_functions import create_top_level, create_label, create_ttk_button
 
 
 class WindowChooseClass:
+    """
+    Class for creating a mode selection window
+
+    """
+
     _SIZE_WINDOW = SIZE_TEST_MODE_CHOOSE_WINDOW
     _TITLE = 'Режим тестирования'
 
@@ -29,6 +34,14 @@ class WindowChooseClass:
             exceptions_logger.error(message)
 
     def create_choose_button(self, text_button: str, style_button='ChooseButton.TButton'):
+        """
+        Creates a ttk.Button() with a fixed style
+
+        :param text_button:
+        :param style_button: Name of the ttk.Style() object for the button
+        :return: ttk.Button()
+        """
+
         try:
             default_button_style = Style()
             default_button_style.configure(style=style_button, padding=(10, 5, 10, 5),

@@ -1,6 +1,5 @@
 from app.config import SIZE_TEST_MODE_CHOOSE_WINDOW
 from tkinter import messagebox
-
 from app.logger import exceptions_logger
 from app.other.custom_print import colored_print
 

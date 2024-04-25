@@ -1,11 +1,16 @@
 from app.config import SIZE_TEST_MODE_MAIN_WINDOW
 from app.logger import exceptions_logger
-from app.mode_functions.test_mode.test_mode_cls import ModeTestWordsClass
+from app.mode_functions.mode_window.mode_test_classes.mode_test_cls import ModeTestWordsClass
 from app.config import main_logger
 from app.other.custom_print import colored_print
 
 
 class OneHundredMode:
+    """
+    Class for creating a 100-word window
+
+    """
+
     _SIZE_WINDOW = SIZE_TEST_MODE_MAIN_WINDOW
     _TITLE = '100 слов'
     _FIRST_LIST_WORDS = []

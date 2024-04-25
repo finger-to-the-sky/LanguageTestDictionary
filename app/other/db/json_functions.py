@@ -103,7 +103,7 @@ def cache_current_file(filepath: str = None, words_list: list = None, db=cache_f
             db.remove(fp.filepath == caching_files[0]['filepath'])
         db.insert({'filepath': filepath, 'words': words_list})
         cache_files_logger.info(f'Кэширование файла: {filepath} прошло успешно.')
-    except (TypeError, AttributeError) as e:
+    except (TypeError, AttributeError, IndexError) as e:
         message = f'Функция: {cache_current_file.__name__} получила неверные аргументы {e}'
         exceptions_logger.error(message)
         colored_print(message, style='bright', color='red')

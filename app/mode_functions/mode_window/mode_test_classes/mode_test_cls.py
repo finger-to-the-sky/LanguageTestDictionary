@@ -2,107 +2,64 @@ import random
 import tkinter as tk
 from copy import copy
 from tkinter import messagebox, ttk
-from app.config import SIZE_TEST_MODE_WINDOW, main_logger
+from app.config import main_logger
 from app.logger import exceptions_logger
-from app.tk_functions import create_boolean_var, create_string_var, create_top_level, create_frame, create_button, \
+from app.mode_functions.mode_window.mode_test_classes.mode_test_words_init import ModeTestWordsInit
+from app.tk_functions import create_button, \
     create_label, create_entry, create_radio_button, create_int_var, create_ttk_treeview
 from app.translator.text_field_functionality import TextFieldFunctionality
-from app.mode_functions.test_mode.listbox_worker.listbox_editor import ListBoxEditor
 from app.other.db.json_functions import add_word_in_db
-from app.fonts import FontManager
 from app.other.custom_print import colored_print
 
 
-class ModeTestWordsClass:
-    USER_LIST_WORDS = {'correct': [], 'incorrect': {'user_word': [], 'incorrect_word': [],
-                                                    'correct_answer': []}}
+class ModeTestWordsClass(ModeTestWordsInit):
+    """
+    Main class for test operations.
+    """
 
-    def __init__(self, root, title, size_window, first_list, second_list, is_red_test=False):
-        self.root = root
-        self.title = title
-        self.size_window = size_window
-        self.is_red_test = is_red_test
-        self.first_list = first_list
-        self.second_list = second_list
+    def __init__(self, root, title: str, size_window: str, first_list: list, second_list: list,
+                 is_red_test: bool = False):
+        """
 
-        # fonts settings
-        self.font = FontManager()
-        self.label_fonts = self.font.LABEL_FONTS
-        self.button_fonts = self.font.BUTTON_FONTS
-        self.text_fonts = self.font.TEXT_FONTS
-        self.listbox_font = self.font.LISTBOX_FONTS
+        :param root: tkinter.Tk(), tkinter.TopLevel() or any same object
+        :param title: Window title.
+        :param size_window:
+        :param first_list: List of words for translation.
+        :param second_list: List of words for translations.
+        :param is_red_test: Red list mode status.
+        """
 
-        self.window_mode = None
-        self.text_worker = None
-        self.is_visible_results = create_boolean_var()
-        self.is_visible_results.set(False)
-        self.button_clicked = create_boolean_var()
-        self.button_clicked.set(False)
+        super().__init__(root, title, size_window, first_list, second_list, is_red_test)
 
-        # error text field
-        self.error = None
-        self.error_text = create_string_var()
-        self.main_win_error = create_boolean_var()
-        self.main_win_error.set(False)
-
-        self.window = create_top_level(root=self.root)
-        self.frame = create_frame(root=self.window)
-        self.window.focus_set()
-        self.window.title(self.title)
-        self.window.geometry(self.size_window)
-
-        self.set_header(self.window, self.title)
-        self.frame.pack(side=tk.LEFT, padx=(10, 0))
-
-        self.words_worker = ListBoxEditor(master=self.frame,
-                                          is_red_test=self.is_red_test)
-        self.words_worker.FIRST_LANGUAGE_LIST = self.first_list
-        self.words_worker.SECOND_LANGUAGE_LIST = self.second_list
-        self.words_worker.update_listbox()
-
-        self.clear_btn = create_button(root=self.frame, text='Очистить список',
-                                       width=20, height=3,
-                                       font=self.button_fonts['TestModeMenu']['Clear_btn'], bg='#DC6060',
-                                       command=lambda: (self.words_worker.clear_lists(),
-                                                        self.clear_error()
-                                                        ))
-        self.start_btn = create_button(root=self.frame, text='Начать',
-                                       width=20, height=3,
-                                       font=self.button_fonts['TestModeMenu']['Start_btn'], bg='#60DC70',
-                                       command=self.start_mode
-                                       )
-        self.clear_btn.grid(column=2, row=1, pady=(220, 0), padx=(20, 0))
-        self.start_btn.grid(column=2, row=1, pady=(370, 0), padx=(20, 0))
-        main_logger.info(f'Инициализация класса {ModeTestWordsClass.__name__} прошла успешно.')
-
-    def set_error(self, text, window):
-        self.error_text.set(text)
-        error_label = create_label(root=window, textvariable=self.error_text, fg='red', font=self.label_fonts['Errors'])
-        self.main_win_error.set(True)
-        return error_label
-
-    def clear_error(self):
-        if self.main_win_error.get() is True:
-            self.main_win_error.set(False)
         try:
-            self.error.destroy()
-        except AttributeError:
-            exceptions_logger.error(f'self.error = {self.error} был не найден')
+            self.clear_btn = create_button(root=self.frame, text='Очистить список',
+                                           width=20, height=3,
+                                           font=self.button_fonts['TestModeMenu']['Clear_btn'], bg='#DC6060',
+                                           command=lambda: (self.words_worker.clear_lists(),
+                                                            self.clear_error()
+                                                            ))
+            self.start_btn = create_button(root=self.frame, text='Начать',
+                                           width=20, height=3,
+                                           font=self.button_fonts['TestModeMenu']['Start_btn'], bg='#60DC70',
+                                           command=self.start_mode
+                                           )
+            self.clear_btn.grid(column=2, row=1, pady=(220, 0), padx=(20, 0))
+            self.start_btn.grid(column=2, row=1, pady=(370, 0), padx=(20, 0))
 
-    def set_header(self, window, label_text):
-        label = create_label(root=window, text=label_text, font=self.label_fonts['Header'])
-        label.pack()
-        return label
-
-    def create_window_mode(self):
-        self.window_mode = create_top_level(root=self.root)
-        self.window_mode.title(self.title)
-        self.window_mode.geometry(SIZE_TEST_MODE_WINDOW)
-        self.set_header(self.window_mode, self.title)
-        self.window_mode.lift()
-        main_logger.info(f'Новое окно было создано {self.window_mode}')
+            main_logger.info(f'Инициализация класса {ModeTestWordsClass.__name__} прошла успешно.')
+        except AttributeError as e:
+            message = (f'Класс: {ModeTestWordsClass.__name__} не смог завершить инициализацию.\n'
+                       f'Были переданы неверные параметры {e}')
+            colored_print(message, color='red', style='bright')
+            exceptions_logger.error(message)
 
     def start_mode(self):
+        """
+        Starts testing words.
+
+        :return:
+        """
+
         if not self.words_worker.FIRST_LANGUAGE_LIST:
             if self.main_win_error.get() is not True:
                 self.error = self.set_error(text='Чтобы начать работу, добавьте слова', window=self.frame)
@@ -114,17 +71,34 @@ class ModeTestWordsClass:
             self.create_question()
 
     def finish_mode(self):
+        """
+        Finishes testing words.
+        :return:
+        """
+
         self.window_mode.destroy()
         self.create_window_mode()
         self.result_table()
         main_logger.info(f'Тестовый режим был завершен {self.finish_mode}.')
 
     def exit(self):
+        """
+        Exits test mode.
+
+        :return:
+        """
+
         self.window_mode.destroy()
         self.__init__(root=self.root, title=self.title, size_window=self.size_window, first_list=self.first_list,
                       second_list=self.second_list, is_red_test=self.is_red_test)
 
     def create_question(self):
+        """
+        Creates necessary elements in the window for word testing and passes user responses to `check_correct_answer`.
+
+        :return:
+        """
+
         self.clear_user_answers_list()
         # Variables for working
         words_list = copy(self.words_worker.FIRST_LANGUAGE_LIST)
@@ -139,8 +113,8 @@ class ModeTestWordsClass:
         # Entry widget for answering with needed instruments
         answer_entry = create_entry(root=self.window_mode, width=20, font=self.text_fonts['EntryWidget'])
         answer_entry.focus_set()
-        TextFieldFunctionality.russian_add_hotkeys(root=self.window_mode, text_widgets=[answer_entry])
-        TextFieldFunctionality.create_context_menu(root=self.window_mode, text_widgets=[answer_entry])
+        TextFieldFunctionality.russian_add_hotkeys(root=self.window_mode, text_widgets=(answer_entry,))
+        TextFieldFunctionality.create_context_menu(root=self.window_mode, text_widgets=(answer_entry,))
 
         # Radiobutton for not other mode questions
         selected_radio = create_int_var()
@@ -214,7 +188,7 @@ class ModeTestWordsClass:
                         word, answers_list[int(selected_radio.get())]))
 
                 except ValueError as e:
-                    message = f'Ошибка в рандомизации ответов {self.create_question.__name__}'
+                    message = f'Ошибка в рандомизации ответов {self.create_question.__name__} {e}'
                     exceptions_logger.error(message)
                     colored_print(message, color='red', style='bright')
 
@@ -238,11 +212,25 @@ class ModeTestWordsClass:
 
         self.result_table()
 
-    def check_correct_answer(self, check_word: str, user_text):
-        self.button_clicked.set(True)
-        checkword_id = self.first_list.index(check_word)
-        fixed_user_text = user_text.strip().replace(', ', ',').replace(' , ', ',')
-        count_words = []
+    def check_correct_answer(self, check_word: str, user_text: str):
+        """
+        Checks if the user's answer matches the translation of the given word saving the results in USER_LIST_WORDS.
+
+        :param check_word:  given word
+        :param user_text:  user's answer
+        :return:
+        """
+
+        try:
+            self.button_clicked.set(True)
+            checkword_id = self.first_list.index(check_word)
+            fixed_user_text = user_text.strip().replace(', ', ',').replace(' , ', ',')
+            count_words = []
+        except (ValueError, AttributeError) as e:
+            message = f'Функция: {self.check_correct_answer.__name__} получила неверные параметры {e}'
+            exceptions_logger.error(message)
+            colored_print(message, color='red', style='bright')
+            return
 
         try:
             for idx, word in enumerate(self.second_list):
@@ -250,7 +238,7 @@ class ModeTestWordsClass:
                     count_words.append(idx)
             user_word_id = self.second_list.index(fixed_user_text)
 
-        except ValueError as e:
+        except ValueError:
             user_word_id = None
 
         if user_word_id is not None:
@@ -284,46 +272,74 @@ class ModeTestWordsClass:
             main_logger.info('Слово успешно добавлено в список')
 
     def answer_redlist(self, event):
-        item = event.widget.selection()[0]
-        current_word = event.widget.item(item)['values'][0]
+        """
+        Adds incorrect user answers to the Red List.
+        :param event:
+        :return:
+        """
+        try:
+            item = event.widget.selection()[0]
 
-        idx = self.USER_LIST_WORDS['incorrect']['incorrect_word'].index(current_word)
-        user_word = self.USER_LIST_WORDS['incorrect']['user_word'][idx]
-        result = self.USER_LIST_WORDS['incorrect']['correct_answer'][idx]
+            current_word = event.widget.item(item)['values'][0]
 
-        if self.is_red_test is True:
-            messagebox.showinfo(current_word, f"Вы ввели: {user_word}\nПравильный перевод: {result}")
-            main_logger.info('Запрос на добавление слова в Красный Список был произведен')
+            idx = self.USER_LIST_WORDS['incorrect']['incorrect_word'].index(current_word)
+            user_word = self.USER_LIST_WORDS['incorrect']['user_word'][idx]
+            result = self.USER_LIST_WORDS['incorrect']['correct_answer'][idx]
 
-        else:
-            answer = messagebox.askquestion(title=f'{current_word}',
-                                            message=f"Вы ввели: {user_word}\nПравильный перевод: {result}"
-                                                    "\nДобавить слово в Красный список?")
+            if self.is_red_test is True:
+                messagebox.showinfo(current_word, f"Вы ввели: {user_word}\nПравильный перевод: {result}")
+                main_logger.info('Запрос на добавление слова в Красный Список был произведен')
 
-            main_logger.info('Запрос на добавление слова в Красный Список был произведен')
-            if answer == 'yes':
-                add_word_in_db(word=current_word, translate=result)
-                main_logger.info('Слово было добавлено в Красный Список')
-        self.window_mode.focus_set()
+            else:
+                answer = messagebox.askquestion(title=f'{current_word}',
+                                                message=f"Вы ввели: {user_word}\nПравильный перевод: {result}"
+                                                        "\nДобавить слово в Красный список?")
+
+                main_logger.info('Запрос на добавление слова в Красный Список был произведен')
+                if answer == 'yes':
+                    add_word_in_db(word=current_word, translate=result)
+                    main_logger.info('Слово было добавлено в Красный Список')
+            self.window_mode.focus_set()
+        except IndexError as e:
+            message = f'Функция: {self.answer_redlist.__name__}. Выделите пожалуйста слово. \nError: {e}'
+            colored_print(message, 'red')
 
     def create_table(self, column_name: str, current_list: list, selectmode: str = 'browse'):
+        """
+        Creates a table based on the specified parameters.
+
+        :param column_name: Table header.
+        :param current_list: List with the contents of the table.
+        :param selectmode: Table content selection mode.
+        :return:
+        """
+
         style = ttk.Style()
         style.configure("Treeview.Heading", font=self.listbox_font['ResultTableHeader'])
         style.configure("Treeview.Cell", font=self.listbox_font['ResultTableContent'])
+        try:
+            tree = create_ttk_treeview(root=self.window_mode, columns=column_name, show="headings",
+                                       selectmode=selectmode,
+                                       height=20)
+            tree.tag_configure("Treeview.Cell", font=self.listbox_font['ResultTableContent'])
 
-        tree = create_ttk_treeview(root=self.window_mode, columns=column_name, show="headings", selectmode=selectmode,
-                                   height=20)
-        tree.tag_configure("Treeview.Cell", font=self.listbox_font['ResultTableContent'])
+            tree.heading(column_name, text=column_name, anchor=tk.W)
+            tree.column("#1", stretch=False, width=350)
 
-        tree.heading(column_name, text=column_name, anchor=tk.W)
-        tree.column("#1", stretch=False, width=350)
-
-        for word in current_list:
-            tree.insert("", tk.END, values=word, tags="Treeview.Cell")
-        main_logger.info(f'Таблица {column_name} была успешно создана.')
-        return tree
+            for word in current_list:
+                tree.insert("", tk.END, values=word, tags="Treeview.Cell")
+            main_logger.info(f'Таблица {column_name} была успешно создана.')
+            return tree
+        except (tk.TclError, TypeError, AttributeError) as e:
+            message = f'Функция: {self.create_table.__name__} получила неверные параметры {e}'
+            exceptions_logger.error(message)
+            colored_print(message, color='red', style='bright')
 
     def result_table(self):
+        """
+        Creates content for the result window in the form of buttons and tables with test word results.
+        :return:
+        """
         def toogle_table():
             self.is_visible_results.set(not self.is_visible_results.get())
             if self.is_visible_results.get():
@@ -377,6 +393,10 @@ class ModeTestWordsClass:
         main_logger.info('Результирующие таблицы были успешно созданы и размещены')
 
     def clear_user_answers_list(self):
+        """
+        Clears user answer lists.
+        :return:
+        """
         self.USER_LIST_WORDS['correct'].clear()
         self.USER_LIST_WORDS['incorrect']['user_word'].clear()
         self.USER_LIST_WORDS['incorrect']['incorrect_word'].clear()

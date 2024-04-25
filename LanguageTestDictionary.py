@@ -1,11 +1,12 @@
 import tkinter as tk
-from app.mode_functions.test_mode.activation import test_mode_activate
+from app.mode_functions.mode_window.activation import mode_activate
 from app.tk_functions import create_label, create_button, create_text_widget, create_frame
 from app.translator.languages_worker.languages_worker import LanguagesWorker
 from app.translator.text_field_functionality import TextFieldFunctionality
 from app.config import TITLE, SIZE_WINDOW, main_logger
 from app.other.instruction.instructions import set_instruction_field
 from app.fonts import FontManager
+from tkinter import messagebox
 
 
 class MainWindow:
@@ -32,9 +33,14 @@ class MainWindow:
         self.frame = create_frame(self.root)
         self.test_mode_button = create_button(root=self.frame, text='Режим тестирования',
                                               font=self.button_font['StartChoosing_btn'],
-                                              command=lambda: test_mode_activate(root=self.root))
+                                              command=lambda: mode_activate(root=self.root))
         self.translate_file_btn = create_button(root=self.frame, text='Перевести файл',
-                                                font=self.button_font['TranslateFile_btn'])
+                                                font=self.button_font['TranslateFile_btn'],
+                                                command=lambda: messagebox.showinfo(
+                                                    'Функция находиться на стадии проектирования',
+                                                    message='Функция перевода файла недоступна в текущей '
+                                                            'версии приложения. Я работаю над этим ^-^'))
+
         self.user_text_widget = create_text_widget(root=self.root, width=80, height=10,
                                                    font=self.text_font['TextWidget'])
         self.translated_text_widget = create_text_widget(root=self.root, width=80, height=10,

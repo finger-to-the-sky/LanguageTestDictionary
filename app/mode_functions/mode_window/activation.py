@@ -3,7 +3,7 @@ from app.mode_functions.species_modes.onehudred_mode import OneHundredMode
 from app.mode_functions.choose_window import WindowChooseClass
 
 
-def test_mode_activate(root):
+def mode_activate(root):
     win = WindowChooseClass(root=root)
     first = win.create_choose_button(text_button='100 слов')
     second = win.create_choose_button(text_button='Красный Тест')

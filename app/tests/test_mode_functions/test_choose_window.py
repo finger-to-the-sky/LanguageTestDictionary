@@ -4,11 +4,7 @@ import pytest
 import tkinter as tk
 from tkinter import ttk
 from app.mode_functions.choose_window import WindowChooseClass
-
-
-@pytest.fixture
-def choose_class():
-    return WindowChooseClass(tk.Tk())
+from app.tests.fixtures.test_mode_functions.chooses_fixtures import choose_class
 
 
 class TestChooseWindow:

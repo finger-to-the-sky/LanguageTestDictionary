@@ -151,6 +151,7 @@ class TestListboxAdder:
             assert isinstance(test_listbox_adder.create_new_window(root=root, geometry=geometry, title=title),
                               tk.Toplevel)
 
+    @pytest.mark.skip(reason='In this test, confirmation is required on the messagebox.')
     @pytest.mark.parametrize(
         'window, title, message',
         [

@@ -178,11 +178,13 @@ class ListBoxAdderClass:
         :param message: text for displaying to user
         :return:
         """
-
         exception_message = f'Функция: {self.confirm_cancel.__name__} получила неверные параметры'
         try:
-            if not isinstance(window, tk.Tk) or not isinstance(window, tk.Toplevel):
+            if isinstance(window, tk.Tk) or isinstance(window, tk.Toplevel):
+                pass
+            else:
                 raise AttributeError
+
             answer = messagebox.askquestion(title=title,
                                             message=message)
             window.focus_set()

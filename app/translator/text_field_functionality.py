@@ -1,3 +1,5 @@
+import re
+
 import httpcore
 import keyboard
 import pyperclip
@@ -189,6 +191,7 @@ class TextWorker:
         :param func:
         :return:
         """
+
         def wrapper(*args, **kwargs):
             self = args[0]
             try:
@@ -219,6 +222,10 @@ class TextWorker:
                 message = f'{self.get_text_translator.__name__} Языка с таким названием нет в списке GoogleTrans {e}'
                 exceptions_logger.error(message)
                 colored_print(message, color='red', style='bright')
+            except (TypeError, AttributeError) as e:
+                message = f'Функция {self.get_text_translator.__name__} приняла не верные параметры {e}'
+                main_logger.error(message)
+                colored_print(message, color='red', style='bright')
 
         return wrapper
 
@@ -233,18 +240,17 @@ class TextWorker:
         :param second_text_widget: tkinter.Text() - Text widget for inserting translation
         :return:
         """
-        try:
-            text = first_text_widget.get("1.0", "end")
-            if self.error is True and len(text) <= 1:
-                return
-            result = self.translator.translate(src=self.src, dest=self.dest, text=text)
-            second_text_widget.delete('1.0', 'end')
-            second_text_widget.insert('1.0', result.text)
-            return result.text
-        except (TypeError, AttributeError) as e:
-            message = f'Функция {self.get_text_translator.__name__} приняла не верные параметры {e}'
-            main_logger.error(message)
-            colored_print(message, color='red', style='bright')
+
+        text = first_text_widget.get("1.0", "end")
+        if self.error is True and len(text) <= 1:
+            return
+        elif len(text) <= 1:
+            raise IndexError
+
+        result = self.translator.translate(src=self.src, dest=self.dest, text=text)
+        second_text_widget.delete('1.0', 'end')
+        second_text_widget.insert('1.0', result.text)
+        return result.text
 
     def set_error_for_exceptions(self, text):
         """
